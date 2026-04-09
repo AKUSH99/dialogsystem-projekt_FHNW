@@ -26,7 +26,7 @@ pip install -r requirements.txt
 Create a `.env` file in the project root (copy from `.env.example`):
 
 ```bash
-cp .env.example .env
+cp .env .env
 ```
 
 Then edit `.env` with your API keys:
@@ -54,20 +54,22 @@ LANGSMITH_PROJECT=buy-bot
 4. Create a new API key
 5. Copy it to `.env`
 
-## Running the Chatbot
+## Testing API Connections
+
+> **Note**: `test-chat.py` is a TEST FILE only. It verifies that OpenRouter API and LangSmith tracing work correctly. It does NOT represent the actual Buy-Bot implementation.
 
 ```bash
 python test-chat.py
 ```
 
-## Features
+### What test-chat.py Tests
+- ✅ OpenRouter API connectivity
+- ✅ LangSmith tracing integration
+- ✅ LangGraph state management
+- ✅ Basic safeguard filters
+- ✅ Message history handling
 
-✅ **LangGraph State Machine** - Structured conversation flow
-✅ **System Prompt** - Buy-Bot personality and guidelines
-✅ **OpenRouter Integration** - Access to various open-source LLMs
-✅ **Input Safeguards** - Filters inappropriate content
-✅ **LangSmith Tracing** - Full conversation tracing and analytics
-✅ **Interactive CLI** - Chat directly in the terminal
+**The actual Buy-Bot implementation will be created separately.**
 
 ## Architecture
 
@@ -105,16 +107,18 @@ Replace the model in `test-chat.py` with any OpenRouter model:
 "openrouter/mistralai/mistral-7b-instruct" # Mistral 7B
 ```
 
-## Customization
+## Customization (For Testing Only)
 
-### Modify System Prompt
-Edit `SYSTEM_PROMPT` in `test-chat.py` to change Buy-Bot's personality and behavior.
+Since `test-chat.py` is a test file, these customizations are just for testing purposes:
 
-### Add More Safeguards
-Extend `safeguard_input()` function to add custom filtering rules.
+### Modify Test System Prompt
+Edit `SYSTEM_PROMPT` in `test-chat.py` to test different prompts.
 
-### Change LLM Parameters
-Adjust `temperature`, `max_tokens`, or other parameters in the `ChatOpenAI` initialization.
+### Add More Test Safeguards
+Extend `safeguard_input()` function to test new filtering rules.
+
+### Change Test LLM Parameters
+Adjust `temperature`, `max_tokens`, or model in `test-chat.py` to test different configurations.
 
 ## Troubleshooting
 

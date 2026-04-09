@@ -1,6 +1,16 @@
 """
-Buy-Bot LangGraph Implementation
-A laptop recommendation chatbot with safety guardrails and tracing.
+test-chat.py - Testing API Connections Only
+
+This is a TEST FILE for verifying that OpenRouter API and LangSmith tracing work correctly.
+It does NOT represent the actual Buy-Bot implementation for the project.
+
+Use this to test:
+- OpenRouter API connectivity
+- LangSmith tracing setup
+- LangGraph state management
+- Basic safeguards
+
+The actual Buy-Bot project implementation will be created separately.
 """
 
 import os
