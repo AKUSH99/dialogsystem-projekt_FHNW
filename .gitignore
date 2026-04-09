@@ -49,3 +49,8 @@ yarn-error.log*
 
 # Docker
 docker-compose.override.yml
+
+# Local Rasa / env artifacts
+rasa_venv/
+rasa_bot/.rasa/
+rasa_bot/models/*.tar.gz

@@ -12,6 +12,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Text
+import subprocess
 
 from rasa_sdk import Action, FormValidationAction, Tracker
 from rasa_sdk.executor import CollectingDispatcher
@@ -288,25 +289,30 @@ class ActionCallLanggraph(Action):
             "gaming": tracker.get_slot("gaming"),
         }
 
+        # LangGraph runs in the .venv (Python 3.13) which has pydantic v2.
+        # The rasa_venv uses pydantic v1, so we call LangGraph via subprocess.
+        venv_python = PROJECT_ROOT / ".venv" / "Scripts" / "python.exe"
+        script = (
+            "import sys, json; sys.path.insert(0, sys.argv[1]);"
+            "from langgraph_agents.graph import run_buybot_graph;"
+            "ctx = json.loads(sys.argv[3]);"
+            "print(run_buybot_graph(sys.argv[2], ctx))"
+        )
         try:
-            from langgraph_agents import run_buybot_graph
-
-            response = run_buybot_graph(user_message=user_message, context=context)
-            dispatcher.utter_message(text=response)
-        except ImportError:
-            # LangGraph agents not available — graceful fallback
-            dispatcher.utter_message(
-                text=(
-                    "That's a great question! 🤔 I'm currently limited to helping you choose a laptop based on your "
-                    "budget and needs. Feel free to ask me anything about finding your perfect laptop! 💻"
-                )
+            result = subprocess.run(
+                [str(venv_python), "-c", script, str(PROJECT_ROOT), user_message, json.dumps(context)],
+                capture_output=True,
+                text=True,
+                timeout=60,
+                env={**os.environ, "PYTHONUTF8": "1"},
             )
+            response = result.stdout.strip()
+            if not response:
+                raise RuntimeError(result.stderr[:200] if result.stderr else "empty output")
+            dispatcher.utter_message(text=response)
         except Exception as e:
             dispatcher.utter_message(
-                text=(
-                    "Hmm, I ran into a little hiccup there. Could you rephrase your question? "
-                    "I'm here to help you find the perfect laptop! 😊"
-                )
+                text="Hmm, I ran into a little hiccup there. Could you rephrase your question? I'm here to help you find the perfect laptop! 😊"
             )
 
         return []

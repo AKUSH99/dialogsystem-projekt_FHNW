@@ -55,7 +55,48 @@ def call_llm(
     for client in clients:
         try:
             response = client.invoke(messages)
-            return response.content
+            content = response.content
+
+            # Strip reasoning tokens emitted by thinking models (e.g. DeepSeek-R1).
+            # Format: <think>...</think> at the start of the response.
+            import re
+            content = re.sub(r"<think>.*?</think>\s*", "", content, flags=re.DOTALL)
+
+            # Some models prefix their visible answer with "Okay, ..." or
+            # "The user asks..." reasoning paragraphs separated by a blank line.
+            # If the first paragraph is clearly meta-commentary, drop it.
+            paragraphs = content.strip().split("\n\n")
+            if len(paragraphs) > 1:
+                first = paragraphs[0].strip()
+                meta_patterns = [
+                    r"^(okay|ok),?\s",
+                    r"^the user (asks?|want|is asking|needs?)",
+                    r"^ich muss",
+                    r"^der benutzer",
+                    r"^we need to",
+                    r"^let me",
+                    r"^i need to",
+                    r"^i should",
+                    r"^i must",
+                    r"^i have to",
+                    r"^regeln",
+                    r"^rules",
+                    r"^instructions",
+                    r"^anweisungen",
+                    r"^als buy-bot",
+                    r"^ich bin buy-bot",
+                    r"^die anweisungen",
+                    r"^ich soll",
+                    r"^als bot",
+                    r"^looking at",
+                    r"^since the user",
+                    r"^given that",
+                    r"^based on",
+                ]
+                if any(re.match(p, first, re.IGNORECASE) for p in meta_patterns):
+                    content = "\n\n".join(paragraphs[1:]).strip()
+
+            return content
         except Exception as e:
             error_text = str(e).lower()
             if any(

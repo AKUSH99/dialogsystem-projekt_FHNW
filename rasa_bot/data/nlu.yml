@@ -189,6 +189,16 @@ nlu:
       - which one is a better deal?
       - explain the difference please
       - which one fits me better?
+      - vergleich MacBook Air vs Dell XPS
+      - was ist der unterschied zwischen diesen beiden?
+      - welcher ist besser?
+      - kannst du die beiden vergleichen?
+      - MacBook oder Lenovo, was ist besser?
+      - vergleiche diese laptops
+      - welcher laptop ist besser für mich?
+      - was sind die unterschiede?
+      - hilf mir zwischen den beiden zu entscheiden
+      - MacBook vs Windows laptop
 
   - intent: ask_guarantee
     examples: |
@@ -205,6 +215,14 @@ nlu:
       - tell me about the guarantee
       - what are the shipping options?
       - can I get a refund?
+      - wie ist die garantie?
+      - kann ich es zurückgeben?
+      - wie lange ist die garantiezeit?
+      - was passiert wenn es kaputt geht?
+      - wie funktioniert die rückgabe?
+      - gibt es eine garantie?
+      - wie lange dauert die lieferung?
+      - was sind die versandoptionen?
 
   - intent: ask_freeform
     examples: |
@@ -221,6 +239,16 @@ nlu:
       - explain what makes a good laptop for me
       - I need more details about this model
       - tell me more about it
+      - welcher laptop hat die beste akkulaufzeit?
+      - wie gut ist der akku?
+      - welches display ist am besten?
+      - erkläre mir was einen guten laptop ausmacht
+      - was soll ich bei einem laptop beachten?
+      - ist dieser laptop gut für die uni?
+      - wie schnell ist der prozessor?
+      - wie viel speicher hat er?
+      - ist die tastatur gut?
+      - wie ist die verarbeitungsqualität?
 
   - intent: out_of_scope
     examples: |

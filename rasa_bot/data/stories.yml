@@ -75,21 +75,6 @@ stories:
       - intent: ask_freeform
       - active_loop: null
       - action: action_call_langgraph
-      - action: laptop_recommendation_form
-      - active_loop: laptop_recommendation_form
-      - intent: inform_use_case
-        entities:
-          - use_case: "university"
-      - slot_was_set:
-          - use_case: "university"
-      - intent: inform_portability
-      - slot_was_set:
-          - portability: "yes"
-      - intent: inform_gaming
-      - slot_was_set:
-          - gaming: "no"
-      - active_loop: null
-      - action: action_recommend_laptop
 
   - story: user asks comparison
     steps:
