@@ -16,7 +16,7 @@ The actual Buy-Bot project implementation will be created separately.
 import os
 from dotenv import load_dotenv
 
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from langchain_openai import ChatOpenAI
 
 # Load environment variables from .env file
@@ -58,19 +58,32 @@ def main():
     print("=" * 60)
     print("Type 'quit' to exit\n")
 
-    # Initialize OpenRouter LLM
-    try:
-        llm = ChatOpenAI(
-            model="google/gemma-3-27b-it:free",
-            api_key=os.getenv("OPENROUTER_API_KEY"),
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
+        print("❌ OPENROUTER_API_KEY is missing. Add it to .env first.\n")
+        return
+
+    # Try models in order and fall back when a provider is rate-limited.
+    candidate_models = [
+        "google/gemma-3-27b-it:free",
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "nvidia/nemotron-3-super-120b-a12b:free",
+        "deepseek/deepseek-r1:free",
+    ]
+
+    llm_clients = [
+        ChatOpenAI(
+            model=model_name,
+            api_key=api_key,
             base_url="https://openrouter.ai/api/v1",
             temperature=0.7,
             max_tokens=500,
         )
-        print("✅ OpenRouter API initialized successfully\n")
-    except Exception as e:
-        print(f"❌ Failed to initialize OpenRouter API: {e}\n")
-        return
+        for model_name in candidate_models
+    ]
+
+    print("✅ OpenRouter API initialized successfully")
+    print(f"ℹ️  Model fallback order: {', '.join(candidate_models)}\n")
 
     # Initialize message history
     messages = []
@@ -95,20 +108,42 @@ def main():
         # Add user message to history
         messages.append(HumanMessage(content=user_input))
 
-        # Call LLM with message history
-        try:
-            response = llm.invoke(messages)
-            bot_response = response.content
+        # Call LLM with fallback across candidate models
+        bot_response = None
+        last_error = None
 
+        for llm in llm_clients:
+            try:
+                response = llm.invoke(messages)
+                bot_response = response.content
+                print(f"\nℹ️  Responded with model: {llm.model_name}")
+                break
+            except Exception as e:
+                error_text = str(e).lower()
+                last_error = e
+
+                if (
+                    "429" in error_text
+                    or "rate-limit" in error_text
+                    or "rate limit" in error_text
+                    or "404" in error_text
+                    or "no endpoints found" in error_text
+                ):
+                    print(f"\n⚠️  Model unavailable or rate-limited: {llm.model_name}. Trying next model...")
+                    continue
+
+                # Non-rate-limit error: stop trying additional models.
+                break
+
+        if bot_response is not None:
             # Add bot response to history
             messages.append(AIMessage(content=bot_response))
+            print(f"Bot: {bot_response}\n")
+            continue
 
-            print(f"\nBot: {bot_response}\n")
-
-        except Exception as e:
-            print(f"\n❌ Error calling LLM: {e}\n")
-            # Remove the user message if LLM call failed
-            messages.pop()
+        print(f"\n❌ Error calling LLM: {last_error}\n")
+        # Remove the user message if all model calls failed
+        messages.pop()
 
 
 if __name__ == "__main__":
