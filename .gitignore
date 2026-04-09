@@ -36,11 +36,10 @@ Thumbs.db
 *.log
 logs/
 
-# Data
+# Data — ignore raw/external data files but keep project data
 *.csv
-*.json
-!config/*.json
-data/
+# Allow project JSON files (laptops database, etc.)
+# data/ directory is committed intentionally
 
 # Node (falls Web-Frontend)
 node_modules/
