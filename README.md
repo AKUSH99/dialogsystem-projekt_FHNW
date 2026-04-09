@@ -146,7 +146,7 @@ cd dialogsystem-projekt_FHNW
 
 | Artefakt | Link |
 |---|---|
-| **Conversational AI Canvas (Miro)** | Link folgt |
+| **Conversational AI Canvas (Miro)** | https://miro.com/app/board/uXjVG2xTs8c=/ |
 | **Präsentationsfolien** | Link folgt |
 | **Voiceflow-Projekt** | Link folgt |
 | **GitHub Repository** | [AKUSH99/dialogsystem-projekt_FHNW](https://github.com/AKUSH99/dialogsystem-projekt_FHNW) |
@@ -170,10 +170,9 @@ cd dialogsystem-projekt_FHNW
 
 | Name | Rolle |
 |---|---|
-| TBD | TBD |
-| TBD | TBD |
-| TBD | TBD |
-| TBD | TBD |
+| Almidin Bangoji | Student / Collaborator |
+| Vaagisan Vadivel | Student / Collaborator |
+| Damian Martin | Student / Collaborator |
 
 ---
 
