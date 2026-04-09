@@ -38,9 +38,42 @@ Simple log of completed work on Buy-Bot project.
 
 ---
 
+### Architecture Documentation
+- ✅ Created `ARCHITECTURE.md` - Comprehensive guide to Rasa + LangGraph agents
+- ✅ Documented intended architecture: **Rasa NLU + LangGraph Agents**
+- ✅ Explained two-stage approach:
+  - Stage 1: Rasa extracts intent (budget, use case, mobility, etc.)
+  - Stage 2: LangGraph routes to specialized agents (Uni, Gaming, Work)
+- ✅ Detailed each agent type (Uni, Gaming, Work) with flows
+- ✅ Created product database schema design
+- ✅ Provided implementation roadmap (6 phases)
+- ✅ Clarified test-chat.py is infrastructure testing only
+- ✅ Updated README.md with architecture diagrams
+- ✅ Updated LLM.md with Rasa + agents explanation
+
+### Design Clarifications
+- ✅ Budget is float value (e.g., 800.0, 1500.0) - NOT translated to low/medium/high
+- ✅ Budget extracted directly by Rasa as numeric entity
+- ✅ Frontend channels: **Streamlit app** + **Telegram bot** only
+- ✅ No session management or feedback collection needed (simple interfaces)
+- ✅ Updated product matching algorithm to use 20% budget margin
+- ✅ Updated training data examples for budget extraction
+- ✅ Updated architecture roadmap (Phase 6: Streamlit + Telegram only)
+
+### File Cleanup & Organization
+- ✅ Removed all redundancy from README.md, ARCHITECTURE.md, LLM.md
+- ✅ README.md: Personas, example dialogs, problem/solution (human-friendly)
+- ✅ ARCHITECTURE.md: Pure technical design (Rasa, agents, database schema)
+- ✅ LLM.md: Navigation guide for AI assistants (links to other files)
+- ✅ Each file is now specialized with no duplication
+- ✅ Cross-file references to prevent copy-paste content
+
 ## Current Status
-🟢 **Testing infrastructure ready - test-chat.py can verify API connections**
-🔵 **Actual Buy-Bot implementation planned separately**
+🟢 **Testing infrastructure ready - test-chat.py verifies API connections**
+🟢 **Documentation complete and well-organized**
+🔵 **Rasa + LangGraph agent implementation next**
+🔵 **Product database and RAG integration needed**
+🔵 **Streamlit + Telegram frontends to be built**
 
 ---
 

@@ -1,35 +1,27 @@
 # 🛒 Buy-Bot – FHNW Dialogsysteme Projekt
 
-> Ein intelligenter Laptop-Kaufberater-Chatbot, der Kunden ohne technisches Vorwissen durch den Kaufprozess führt.
+Ein intelligenter Laptop-Kaufberater-Chatbot, der Kunden ohne technisches Vorwissen durch den Kaufprozess führt.
 
 **Modul:** Dialogsysteme – FHNW School of Business  
 **Projekttyp:** Team-based Assessment
 
-> **Important**: See `LLM.md`, `SETUP.md`, and `CHANGELOG.md` for technical documentation. The file `test-chat.py` is a **TEST FILE ONLY** for verifying API connections — it does NOT represent the actual Buy-Bot implementation.
-
 ---
 
-## 📋 Inhaltsverzeichnis
+## Quick Links
 
-- [Problemstellung](#-problemstellung)
-- [Lösung](#-lösung)
-- [Bot-Persona: Buy-Bot](#-bot-persona-buy-bot)
-- [User Personas](#-user-personas)
-- [Beispieldialoge](#-beispieldialoge)
-- [Architektur](#-architektur)
-- [Setup & Installation](#-setup--installation)
-- [Projektartefakte](#-projektartefakte)
-- [Bewertungskriterien](#-bewertungskriterien)
-- [Team](#-team)
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** – Technical design & implementation
+- **[SETUP.md](SETUP.md)** – Installation & testing
+- **[CHANGELOG.md](CHANGELOG.md)** – Progress log
+- **[LLM.md](LLM.md)** – For AI assistants
 
 ---
 
 ## ❗ Problemstellung
 
-- **Hohe Abbruchraten** im Kaufprozess, weil Kunden unsicher sind, ob ein Gerät zu ihren Bedürfnissen passt.
-- **Erhöhte Retouren-Quoten** durch Fehlkäufe, da herkömmliche Filter (Preis, Marke) den eigentlichen Use Case nicht abdecken.
-- Kunden fühlen sich von technischen Spezifikationen (RAM, CPU, GPU, DDR5, Taktrate) **überfordert**.
-- **Fehlende personalisierte Beratung** im E-Commerce-Bereich.
+- **Hohe Abbruchraten** im Kaufprozess, weil Kunden unsicher sind, ob ein Gerät zu ihren Bedürfnissen passt
+- **Erhöhte Retouren-Quoten** durch Fehlkäufe, da herkömmliche Filter (Preis, Marke) den eigentlichen Use Case nicht abdecken
+- Kunden fühlen sich von technischen Spezifikationen (RAM, CPU, GPU, DDR5, Taktrate) **überfordert**
+- **Fehlende personalisierte Beratung** im E-Commerce-Bereich
 
 ## 💡 Lösung
 
@@ -113,45 +105,20 @@
 
 ---
 
-## 🏗 Architektur
+## 🏗 Architecture
 
-> Wird noch definiert - Tech-Stack und Architekturentscheidungen werden im Team besprochen.
+Buy-Bot uses **Rasa NLU + LangGraph Agents** for intelligent conversation:
 
-### Geplante Komponenten
-- **Chatbot-Frontend:** Web-Chat / Telegram / Voiceflow
-- **Backend:** TBD
-- **Datenbank:** Interne Produkt-DB (Laptops)
-- **Knowledge Base (RAG):** Garantie, Rückgabe, Versandbedingungen
-- **APIs:** Workflow System API, Produkt-DB API
+1. **Rasa NLU** – Extracts intent (budget, use_case, mobility, performance)
+2. **LangGraph Router** – Routes to specialized agent
+3. **Three Agents:**
+   - **Uni Agent** – For students (lightweight, battery life)
+   - **Gaming Agent** – For gamers (GPU/CPU performance)
+   - **Work Agent** – For professionals (reliability, productivity)
+4. **Recommendation Engine** – Matches user profile to products
+5. **Frontend** – Streamlit app + Telegram bot
 
-### Kanäle
-| Kanal | Beschreibung |
-|---|---|
-| **Primär** | Web-Chat auf der E-Commerce-Website |
-| **Optional** | Telegram |
-
----
-
-## 🚀 Setup und Installation
-
-> Wird ergänzt, sobald der Tech-Stack festgelegt ist.
-
-```bash
-# Repository klonen
-git clone https://github.com/AKUSH99/dialogsystem-projekt_FHNW.git
-cd dialogsystem-projekt_FHNW
-```
-
----
-
-## 📎 Projektartefakte
-
-| Artefakt | Link |
-|---|---|
-| **Conversational AI Canvas (Miro)** | https://miro.com/app/board/uXjVG2xTs8c=/ |
-| **Präsentationsfolien** | Link folgt |
-| **Voiceflow-Projekt** | Link folgt |
-| **GitHub Repository** | [AKUSH99/dialogsystem-projekt_FHNW](https://github.com/AKUSH99/dialogsystem-projekt_FHNW) |
+> 👉 **Full technical details in [ARCHITECTURE.md](ARCHITECTURE.md)**
 
 ---
 
@@ -165,6 +132,17 @@ cd dialogsystem-projekt_FHNW
 | Build, Release und Operate | 20% | NLU/LLM-Nutzung, funktionierendes System, Fehlerbehandlung |
 | Overall und Artefakte | 20% | Vollständiges AI Canvas, nachvollziehbare Umsetzung |
 | Presentation und Demonstration | 15% | Klare Präsentation, überzeugende Demo |
+
+---
+
+## 📎 Projektartefakte
+
+| Artefakt | Link |
+|---|---|
+| **Conversational AI Canvas (Miro)** | https://miro.com/app/board/uXjVG2xTs8c=/ |
+| **Präsentationsfolien** | Link folgt |
+| **Voiceflow-Projekt** | Link folgt |
+| **GitHub Repository** | [AKUSH99/dialogsystem-projekt_FHNW](https://github.com/AKUSH99/dialogsystem-projekt_FHNW) |
 
 ---
 
