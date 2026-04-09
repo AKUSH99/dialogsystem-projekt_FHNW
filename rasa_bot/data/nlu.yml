@@ -1,0 +1,238 @@
+version: "3.1"
+
+nlu:
+  - intent: greet
+    examples: |
+      - hey
+      - hello
+      - hi
+      - hi there
+      - good morning
+      - good afternoon
+      - hey there
+      - hello buy-bot
+      - howdy
+      - hiya
+      - what's up
+      - yo
+      - hallo
+      - guten tag
+      - grüezi
+      - salut
+      - ciao
+
+  - intent: goodbye
+    examples: |
+      - bye
+      - goodbye
+      - see you
+      - see ya
+      - take care
+      - ciao
+      - bye bye
+      - good night
+      - catch you later
+      - talk to you later
+      - I'm done
+      - that's all
+      - thanks bye
+      - tschüss
+      - auf wiedersehen
+      - bis dann
+      - adieu
+
+  - intent: laptop_search
+    examples: |
+      - I'm looking for a laptop
+      - I need a new laptop
+      - help me find a laptop
+      - I want to buy a laptop
+      - I need a computer
+      - can you help me choose a laptop
+      - I'm searching for a laptop
+      - I need a notebook
+      - I need a new computer
+      - help me pick a laptop
+      - what laptop should I buy
+      - which laptop is best for me
+      - ich suche einen laptop
+      - ich brauche einen neuen laptop
+      - kannst du mir bei einem laptop helfen
+      - looking for something to browse the web
+      - I need a laptop for university
+      - I want a gaming laptop
+      - need a laptop for work and gaming
+
+  - intent: inform_budget
+    examples: |
+      - my budget is [800](budget) CHF
+      - I have [900](budget) CHF to spend
+      - around [700](budget) CHF
+      - about [1000](budget) CHF
+      - max [600](budget) CHF
+      - up to [1200](budget) CHF
+      - [800](budget)
+      - [500](budget) CHF is my limit
+      - I can spend [850](budget)
+      - [750](budget) CHF maximum
+      - roughly [950](budget) CHF
+      - between [600](budget) and [800](budget) CHF
+      - not more than [1000](budget) CHF
+      - mein budget ist [800](budget) CHF
+      - ich habe [900](budget) CHF
+
+  - intent: inform_use_case
+    examples: |
+      - mainly for [university](use_case)
+      - I use it for [study](use_case) and [browsing](use_case)
+      - [Netflix](use_case) and [browsing](use_case)
+      - mostly [work](use_case)
+      - [studying](use_case) and [streaming](use_case)
+      - for [university](use_case) and [gaming](use_case)
+      - [office work](use_case)
+      - [programming](use_case) and [university](use_case)
+      - just [everyday use](use_case)
+      - [browsing](use_case), [YouTube](use_case) and [Netflix](use_case)
+      - [design work](use_case)
+      - [video editing](use_case)
+      - mainly [gaming](use_case)
+      - a mix of [study](use_case) and [entertainment](use_case)
+      - for [school](use_case) and [social media](use_case)
+
+  - intent: inform_portability
+    examples: |
+      - yes I carry it everywhere
+      - I bring it to university every day
+      - I need it to be light
+      - yes portability matters a lot
+      - I travel with it often
+      - it needs to be easy to carry
+      - I commute with it
+      - no it stays at home
+      - it mostly stays on my desk
+      - portability is not important
+      - I need something lightweight
+      - yes I use it on the go
+      - I take it to class daily
+      - nein, es bleibt zuhause
+      - ja, ich nehme es überall mit
+
+  - intent: inform_gaming
+    examples: |
+      - yes I play games
+      - I like gaming
+      - I play CS:GO and League of Legends
+      - I play Counter-Strike
+      - I play some casual games
+      - I play esports titles
+      - yes I game a lot
+      - no I don't play games
+      - I don't really game
+      - games are not important for me
+      - just casual mobile-style games
+      - I play FIFA and GTA
+      - no gaming needed
+      - I want good gaming performance
+      - gaming is my priority
+
+  - intent: affirm
+    examples: |
+      - yes
+      - yeah
+      - yep
+      - sure
+      - of course
+      - absolutely
+      - that sounds good
+      - please do
+      - yes please
+      - definitely
+      - correct
+      - right
+      - exactly
+      - that's right
+      - perfect
+      - ja
+      - genau
+      - klar
+      - natürlich
+
+  - intent: deny
+    examples: |
+      - no
+      - nope
+      - nah
+      - not really
+      - I don't think so
+      - no thanks
+      - I disagree
+      - that's not right
+      - that doesn't work for me
+      - negative
+      - not at all
+      - nein
+      - nein danke
+      - stimmt nicht
+      - das passt nicht
+
+  - intent: ask_comparison
+    examples: |
+      - can you compare these two?
+      - what's the difference between them?
+      - which one is better?
+      - compare laptop A and laptop B
+      - how do they compare?
+      - what are the differences?
+      - which one should I choose?
+      - help me decide between the two
+      - can you put them side by side?
+      - which one is a better deal?
+      - explain the difference please
+      - which one fits me better?
+
+  - intent: ask_guarantee
+    examples: |
+      - what is the return policy?
+      - how does the warranty work?
+      - can I return it?
+      - what if it breaks?
+      - how long is the guarantee?
+      - what about shipping?
+      - how long does delivery take?
+      - is there a warranty?
+      - what if I'm not happy with it?
+      - how do I return a laptop?
+      - tell me about the guarantee
+      - what are the shipping options?
+      - can I get a refund?
+
+  - intent: ask_freeform
+    examples: |
+      - is this laptop good for video editing?
+      - what processor does it have?
+      - how much storage do I get?
+      - will it run my software?
+      - is the screen good enough for design work?
+      - how loud is the fan?
+      - does it have a good keyboard?
+      - how is the build quality?
+      - is it good for long work sessions?
+      - what about battery life for travel?
+      - explain what makes a good laptop for me
+      - I need more details about this model
+      - tell me more about it
+
+  - intent: out_of_scope
+    examples: |
+      - what's the weather today?
+      - tell me a joke
+      - what is the meaning of life?
+      - can you help me with my homework?
+      - who is the president?
+      - order me a pizza
+      - play some music
+      - what time is it?
+      - how do I cook pasta?
+      - translate this for me
+      - help me write an email
+      - tell me the news
