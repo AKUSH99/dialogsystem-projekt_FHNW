@@ -3,7 +3,7 @@
 > Ein intelligenter Laptop-Kaufberater-Chatbot, der Kunden ohne technisches Vorwissen durch den Kaufprozess führt.
 
 **Modul:** Dialogsysteme – FHNW School of Business  
-**Projekttyp:** Team-based Assessment (25% der Gesamtnote)
+**Projekttyp:** Team-based Assessment
 
 ---
 
