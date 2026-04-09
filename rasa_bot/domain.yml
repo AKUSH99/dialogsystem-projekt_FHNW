@@ -1,0 +1,94 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - laptop_search
+  - inform_budget
+  - inform_use_case
+  - inform_portability
+  - inform_gaming
+  - affirm
+  - deny
+  - ask_comparison
+  - ask_guarantee
+  - ask_freeform
+  - out_of_scope
+
+entities:
+  - budget
+  - use_case
+  - portability_preference
+  - gaming_preference
+
+slots:
+  budget:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: budget
+  use_case:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: use_case
+  portability:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: portability_preference
+  gaming:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: gaming_preference
+
+forms:
+  laptop_recommendation_form:
+    required_slots:
+      - budget
+      - use_case
+      - portability
+      - gaming
+
+responses:
+  utter_greet:
+    - text: "Hey there! 👋 I'm Buy-Bot, your personal laptop advisor! I'm here to help you find the perfect laptop — without any confusing tech talk. Ready to find your match? 🎯"
+
+  utter_ask_budget:
+    - text: "Awesome! First things first — what's your budget? You can give me a rough amount in CHF. 💰"
+
+  utter_ask_use_case:
+    - text: "Great! And what will you mainly use the laptop for? For example: university, working from home, browsing, Netflix, gaming — or a mix of things? 🎓"
+
+  utter_ask_portability:
+    - text: "Got it! Will you be carrying this laptop around a lot — like to class or the office? Or will it mostly stay on your desk at home? 🎒"
+
+  utter_ask_gaming:
+    - text: "Last question — do you want to play games on it too? (even casual or esports games count!) 🎮"
+
+  utter_confirm_recommendation:
+    - text: "Perfect, I have everything I need! Let me find the best matches for you... 🔍✨"
+
+  utter_goodbye:
+    - text: "It was a pleasure helping you! Good luck with your new laptop — I'm sure you'll love it! 👋😊"
+
+  utter_fallback:
+    - text: "Hmm, I'm not totally sure about that one. Let me connect you with a bit more info! 💡"
+
+  utter_out_of_scope:
+    - text: "That's a bit outside my laptop expertise! But I'd love to help you find the perfect laptop — shall we get started? 😊"
+
+  utter_affirm_alternatives:
+    - text: "Of course! Let me pull up some alternative options for you. 🔄"
+
+  utter_deny_recommendation:
+    - text: "No worries! Let me think of some other options that might be a better fit for you. 🤔"
+
+  utter_ask_rephrase:
+    - text: "I didn't quite catch that — could you rephrase it? I want to make sure I find you the perfect laptop! 😊"
+
+actions:
+  - action_recommend_laptop
+  - action_call_langgraph
+  - validate_laptop_recommendation_form

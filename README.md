@@ -115,31 +115,93 @@
 
 ## 🏗 Architektur
 
-> Wird noch definiert - Tech-Stack und Architekturentscheidungen werden im Team besprochen.
+Das System verwendet **Rasa als primären Dialog-Manager** (für strukturierte Konversationen via Intents, Entities, Slots und Forms) und **LangGraph als "Expertenteam"** für freie oder komplexe Fragen via spezialisierter LLM-Agenten.
 
-### Geplante Komponenten
-- **Chatbot-Frontend:** Web-Chat / Telegram / Voiceflow
-- **Backend:** TBD
-- **Datenbank:** Interne Produkt-DB (Laptops)
-- **Knowledge Base (RAG):** Garantie, Rückgabe, Versandbedingungen
-- **APIs:** Workflow System API, Produkt-DB API
+```
+User Message
+    │
+    ▼
+┌──────────────┐
+│    RASA       │  Structured dialogue: intents, entities, forms
+│  (NLU +       │
+│  Dialogue)    │
+└──────┬───────┘
+       │
+       │  If free/complex question detected:
+       ▼
+┌──────────────────────┐
+│  Custom Action:       │
+│  action_call_langgraph│ ──► LangGraph Agents
+└──────────────────────┘
+           │
+           ├── router       → classifies the question
+           ├── product_expert → answers product questions
+           ├── comparator   → compares laptops side by side
+           ├── rag_agent    → answers policy/guarantee questions
+           └── advisor      → gives general lifestyle advice
+```
+
+### Projektstruktur
+
+```
+dialogsystem-projekt_FHNW/
+├── rasa_bot/                    # Rasa dialogue manager
+│   ├── domain.yml               # Intents, entities, slots, responses
+│   ├── config.yml               # NLU pipeline and policies
+│   ├── endpoints.yml            # Action server endpoint
+│   ├── credentials.yml          # REST/SocketIO channels
+│   ├── data/
+│   │   ├── nlu.yml              # Training examples (EN + DE)
+│   │   ├── stories.yml          # Dialogue stories
+│   │   └── rules.yml            # Conversation rules
+│   └── actions/
+│       └── actions.py           # Custom actions (recommendation, LangGraph)
+├── langgraph_agents/            # LangGraph expert team
+│   ├── graph.py                 # Main graph definition
+│   └── agents/
+│       ├── router.py            # Question classifier
+│       ├── product_expert.py    # Product Q&A agent
+│       ├── comparator.py        # Laptop comparison agent
+│       ├── advisor.py           # General advice agent
+│       └── rag_agent.py         # Policy/guarantee agent (RAG placeholder)
+├── data/
+│   ├── laptops.json             # Product database (12 laptops)
+│   └── policies.md              # Store policies (for RAG)
+├── test-chat.py                 # TEST FILE: API connection test only
+└── requirements.txt             # Python dependencies
+```
 
 ### Kanäle
 | Kanal | Beschreibung |
 |---|---|
-| **Primär** | Web-Chat auf der E-Commerce-Website |
+| **Primär** | Web-Chat auf der E-Commerce-Website (REST / SocketIO) |
 | **Optional** | Telegram |
 
 ---
 
 ## 🚀 Setup und Installation
 
-> Wird ergänzt, sobald der Tech-Stack festgelegt ist.
+Vollständige Anweisungen findest du in [`SETUP.md`](SETUP.md).
+
+**Kurzanleitung:**
 
 ```bash
-# Repository klonen
-git clone https://github.com/AKUSH99/dialogsystem-projekt_FHNW.git
-cd dialogsystem-projekt_FHNW
+# 1. Abhängigkeiten installieren
+pip install -r requirements.txt
+
+# 2. Umgebungsvariablen konfigurieren
+cp .env.example .env  # API-Keys eintragen
+
+# 3. Rasa-Modell trainieren
+cd rasa_bot && rasa train
+
+# 4. Action-Server starten (neues Terminal)
+cd rasa_bot && rasa run actions
+
+# 5. Rasa-Server starten
+cd rasa_bot && rasa run --cors "*"
+# oder direkt im Terminal chatten:
+cd rasa_bot && rasa shell
 ```
 
 ---
