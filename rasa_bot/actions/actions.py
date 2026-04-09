@@ -194,7 +194,7 @@ class ActionRecommendLaptop(Action):
         for laptop in laptops:
             score = 0
 
-            # Budget filter: must not exceed budget by more than 10 %
+            # Budget filter: must not exceed budget by more than 10%
             if laptop["price_chf"] <= budget * 1.10:
                 score += 3
                 if laptop["price_chf"] <= budget:
@@ -232,7 +232,7 @@ class ActionRecommendLaptop(Action):
                     "let me suggest something close! 😊 You might also want to consider adjusting your budget slightly."
                 )
             )
-            # Fall back to cheapest options within 20 % over budget
+            # Fall back to cheapest options within 20% over budget
             fallback = [l for l in laptops if l["price_chf"] <= budget * 1.20]
             fallback.sort(key=lambda l: l["price_chf"])
             top = [(0, l) for l in fallback[:2]]
