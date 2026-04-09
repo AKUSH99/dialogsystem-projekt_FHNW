@@ -121,7 +121,7 @@ dialogsystem-projekt_FHNW/
 
 ### Test File Architecture Diagram (test-chat.py)
 
-**Note**: This diagram shows the test file structure, not the actual Buy-Bot implementation.
+**Note**: This diagram shows the test file structure for API connection testing.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -137,17 +137,17 @@ dialogsystem-projekt_FHNW/
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────┐
-│       LangGraph State Management (State class)          │
-│  - Maintains message history (messages list)            │
-│  - Uses add_messages reducer for concatenation          │
+│       Message History (Python list)                     │
+│  - Stores HumanMessage and AIMessage objects            │
+│  - Maintains full conversation context                  │
 └────────────────────────┬────────────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────┐
-│           Chat Node (chat_node function)                │
-│  - Tests basic LLM integration                          │
-│  - Calls OpenRouter API                                 │
-│  - Returns response                                     │
+│         LLM Invocation (ChatOpenAI.invoke)               │
+│  - Calls OpenRouter API with message history            │
+│  - Temperature: 0.7, Max tokens: 500                    │
+│  - Returns LLM response                                 │
 └────────────────────────┬────────────────────────────────┘
                          │
                          ▼
@@ -165,38 +165,32 @@ dialogsystem-projekt_FHNW/
 
 ### Key Components
 
-#### 1. System Prompt (SYSTEM_PROMPT constant)
-- Defines Buy-Bot's personality and guidelines
-- Instructs the LLM on conversation style and goals
-- Emphasizes simple language and lifestyle focus
-- Located in `test-chat.py` lines ~22-49
+#### 1. LLM Initialization
+- Creates OpenRouter ChatOpenAI client with proper configuration
+- Model: `openrouter/meta-llama/llama-2-70b-chat`
+- Temperature: 0.7 (moderate creativity)
+- Max tokens: 500 (concise responses)
+- Located in `test-chat.py` main() function
 
-#### 2. State Class (State TypedDict)
-- Holds conversation history as list of messages
-- Uses LangGraph's `add_messages` reducer for proper merging
-- Maintains full context across turns
+#### 2. Message History
+- Maintains list of HumanMessage and AIMessage objects
+- Passed to LLM.invoke() for full conversation context
+- Simple Python list management (no LangGraph StateGraph needed for testing)
 
 #### 3. Safeguard Function (safeguard_input)
 - Validates user input before LLM processing
-- Blocks ~10 unsafe keywords
+- Blocks ~10 unsafe keywords (illegal, hack, abuse, etc.)
 - Rejects messages > 5000 characters
 - Returns tuple: (is_safe: bool, reason: str)
+- Located in `test-chat.py` lines ~25-44
 
-#### 4. Chat Node (chat_node function)
-- Central processing node in the LangGraph
-- Initializes OpenRouter ChatOpenAI client
-- Injects system prompt
-- Calls LLM and returns response
-- Parameters:
-  - **model**: `openrouter/meta-llama/llama-2-70b-chat`
-  - **temperature**: 0.7 (moderate creativity)
-  - **max_tokens**: 500 (concise responses)
-
-#### 5. Graph Building (build_graph function)
-- Creates StateGraph with State as schema
-- Adds chat_node
-- Connects START → chat → END
-- Compiles into runnable graph
+#### 4. Main Conversation Loop
+- Reads user input from CLI
+- Validates with safeguard_input()
+- Calls LLM with full message history
+- Appends response to message history
+- Displays bot response to user
+- Handles errors gracefully
 
 ---
 
@@ -424,30 +418,30 @@ ChatOpenAI(
 
 ## 🎓 Key Concepts for AI Assistants
 
-### System Prompt Injection
-The `SYSTEM_PROMPT` is the source of truth for Buy-Bot behavior. It should:
-- Never be weakened or made generic
-- Always maintain the lifestyle/UX focus
-- Prevent users from jailbreaking into other personas
-- Be tested against the README example dialogs
+### About test-chat.py
+- **TEST FILE ONLY** for verifying API connections, not the actual Buy-Bot
+- Demonstrates LangGraph state management patterns
+- Shows OpenRouter API integration approach
+- Shows LangSmith tracing setup
+- The actual project implementation will be separate
 
-### Message History Management
-LangGraph's `add_messages` reducer:
-- Automatically concatenates messages
-- Prevents duplicate message IDs
-- Maintains proper conversation context
-- Required for stateful conversations
+### Message History Management (Testing)
+Simple Python list of messages:
+- Stores HumanMessage and AIMessage objects from LangChain
+- Passed to LLM.invoke() for full conversation context
+- Easy to understand and debug
+- Production implementation may use more complex state management
 
 ### Token Economy
-- **max_tokens=500**: Keeps responses concise and cost-effective
-- **temperature=0.7**: Balances creativity (persona) with consistency (recommendations)
-- Monitor LangSmith for token usage trends
+- **max_tokens=500**: Test file uses for brevity
+- **temperature=0.7**: Test file uses for reasonable responses
+- Monitor LangSmith for understanding token usage patterns
 
-### Safeguard Philosophy
+### Safeguard Philosophy (Test File)
 - **Defensive**, not paranoid: Filter clear threats, don't over-filter
 - **Transparent**: Tell user why message was blocked
-- **Evolving**: Add rules based on real attack patterns
-- **Tested**: Always verify safeguards don't break legitimate use
+- **Testing**: Test file demonstrates basic safeguard logic
+- **Production**: Actual implementation may need more robust safeguards
 
 ---
 
@@ -455,7 +449,9 @@ LangGraph's `add_messages` reducer:
 
 - **README.md**: Full project definition, personas, example dialogs
 - **SETUP.md**: Installation and configuration guide
-- **test-chat.py**: Implementation details and code comments
+- **LLM.md**: AI assistant project reference (this file)
+- **CHANGELOG.md**: Development log of completed work
+- **test-chat.py**: Test file - API connection testing only
 - **LangGraph Docs**: https://langgraph.dev
 - **OpenRouter Docs**: https://openrouter.ai/docs
 - **LangSmith Docs**: https://docs.smith.langchain.com
@@ -464,21 +460,21 @@ LangGraph's `add_messages` reducer:
 
 ## ✅ Checklist for Working with This Project
 
-Before making changes:
+### Before Testing test-chat.py:
 1. Read this LLM.md file completely
-2. Review the README.md for personas and example dialogs
-3. Check the current SYSTEM_PROMPT in test-chat.py
-4. Review safeguard_input() function for context
-5. Understand how LangGraph State works
-6. Verify API keys are configured in .env
+2. Review the README.md for project context and personas
+3. Review CHANGELOG.md for what's been done
+4. Check SETUP.md for installation instructions
+5. Verify API keys are configured in .env
+6. Understand this is a test file, not the actual implementation
 
-When implementing features:
-1. Validate against README personas and dialogs
-2. Test system prompt changes against example flows
-3. Ensure all responses avoid technical jargon
-4. Run chatbot locally and test interactions
-5. Check LangSmith traces for quality
-6. Document any architectural changes
+### Before Developing the Actual Buy-Bot:
+1. Read all documentation (README, SETUP, LLM, CHANGELOG)
+2. Understand the architecture patterns from test-chat.py
+3. Review the personas and example dialogs in README.md
+4. Plan the actual implementation (product DB, RAG, enhanced flow)
+5. Document all architectural decisions in CHANGELOG.md
+6. Create separate implementation files (not modifying test-chat.py)
 
 ---
 

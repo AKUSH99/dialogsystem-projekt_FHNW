@@ -5,6 +5,8 @@
 **Modul:** Dialogsysteme – FHNW School of Business  
 **Projekttyp:** Team-based Assessment
 
+> **Important**: See `LLM.md`, `SETUP.md`, and `CHANGELOG.md` for technical documentation. The file `test-chat.py` is a **TEST FILE ONLY** for verifying API connections — it does NOT represent the actual Buy-Bot implementation.
+
 ---
 
 ## 📋 Inhaltsverzeichnis
