@@ -2,37 +2,35 @@
 
 ## Prerequisites
 
-- Python 3.10+
-- Virtual environment (venv)
+- Python 3.10 (required for Rasa)
+- Virtual environment (venv or conda)
 
 ---
 
-## Quick Start — Rasa Buy-Bot
-
-### 1. Activate Virtual Environment
+## 1. Activate Virtual Environment
 
 ```bash
-source .venv/bin/activate  # macOS/Linux
-# or
-.venv\Scripts\activate  # Windows
+source .venv/bin/activate   # macOS/Linux
+.venv\Scripts\activate      # Windows
 ```
 
-### 2. Install Dependencies
+---
+
+## 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-> **Note**: Rasa requires Python 3.10. If you're using a newer Python version,
-> consider using `pyenv` or a conda environment.
+---
 
-### 3. Configure Environment Variables
+## 3. Configure Environment Variables
 
 ```bash
 cp .env.example .env
 ```
 
-Then edit `.env` with your API keys:
+Edit `.env` with your API keys:
 
 ```
 OPENROUTER_API_KEY=sk-or-v1-xxxxx
@@ -41,41 +39,25 @@ LANGSMITH_TRACING=true
 LANGSMITH_PROJECT=buy-bot
 ```
 
-### 4. Train the Rasa Model
+---
+
+## 4. Build the Product Database
 
 ```bash
-cd rasa_bot
-rasa train
+python data/init_db.py
 ```
 
-This will generate a trained model in `rasa_bot/models/`. Training takes a few minutes.
+This generates `data/laptops.db` from `data/laptops.sql`. Run this any time you update the SQL file.
 
-### 5. Start the Action Server
+---
 
-Open a **new terminal** and run:
+## 5. Test API Connections
 
 ```bash
-cd rasa_bot
-rasa run actions
+python test-chat.py
 ```
 
-This starts the custom action server on port 5055 (required for recommendations and LangGraph integration).
-
-### 6. Start the Rasa Server
-
-Open another terminal and run:
-
-```bash
-cd rasa_bot
-rasa run --cors "*"
-```
-
-Or, to chat directly in the terminal shell:
-
-```bash
-cd rasa_bot
-rasa shell
-```
+> `test-chat.py` only verifies OpenRouter and LangSmith connectivity. It is not the actual bot.
 
 ---
 
@@ -83,121 +65,65 @@ rasa shell
 
 ```
 dialogsystem-projekt_FHNW/
-├── rasa_bot/                    # Rasa dialogue manager
-│   ├── domain.yml               # Intents, entities, slots, responses
-│   ├── config.yml               # NLU pipeline and policies
-│   ├── endpoints.yml            # Action server endpoint
-│   ├── credentials.yml          # REST/SocketIO channels
+├── rasa_bot/                    # Rasa intake layer (to be built)
+│   ├── domain.yml
+│   ├── config.yml
 │   ├── data/
-│   │   ├── nlu.yml              # Training examples (EN + DE)
-│   │   ├── stories.yml          # Dialogue stories
-│   │   └── rules.yml            # Conversation rules
+│   │   ├── nlu.yml
+│   │   ├── stories.yml
+│   │   └── rules.yml
 │   └── actions/
-│       └── actions.py           # Custom actions (recommendation, LangGraph)
-├── langgraph_agents/            # LangGraph expert team
-│   ├── graph.py                 # Main graph definition
-│   └── agents/
-│       ├── router.py            # Question classifier
-│       ├── product_expert.py    # Product Q&A agent
-│       ├── comparator.py        # Laptop comparison agent
-│       ├── advisor.py           # General advice agent
-│       └── rag_agent.py         # Policy/guarantee agent (RAG placeholder)
+│       └── actions.py           # Webhook: triggers LangGraph pipeline
+├── agents/                      # LangGraph pipeline (to be built)
+│   ├── graph.py
+│   ├── router.py
+│   ├── uni_agent.py
+│   ├── gaming_agent.py
+│   ├── professional_agent.py
+│   ├── office_agent.py
+│   ├── search_agent.py
+│   ├── suggestion_agent.py
+│   └── qa_agent.py
 ├── data/
-│   ├── laptops.json             # Product database (12 laptops)
-│   └── policies.md              # Store policies (for RAG)
-├── test-chat.py                 # TEST FILE: API connection test only
-├── requirements.txt             # Python dependencies
-└── .env.example                 # Environment variable template
-```
-
----
-
-## Architecture
-
-```
-User Message
-    │
-    ▼
-┌──────────────┐
-│    RASA       │  Structured dialogue: intents, entities, forms
-│  (NLU +       │
-│  Dialogue)    │
-└──────┬───────┘
-       │
-       │  If free/complex question detected:
-       ▼
-┌──────────────────────┐
-│  Custom Action:       │
-│  action_call_langgraph│ ──► LangGraph Agents
-└──────────────────────┘
-           │
-           ├── router.py      → classifies the question
-           ├── product_expert → answers product questions
-           ├── comparator     → compares laptops
-           ├── rag_agent      → answers policy questions
-           └── advisor        → gives general advice
+│   ├── laptops.sql              # Source schema + data (28 laptops)
+│   ├── laptops.db               # Compiled SQLite database
+│   ├── init_db.py               # Rebuilds laptops.db
+│   └── policies.md              # Store policies for RAG
+├── frontend/                    # (to be built)
+│   ├── streamlit_app.py
+│   └── telegram_bot.py
+├── test-chat.py
+├── requirements.txt
+└── .env.example
 ```
 
 ---
 
 ## Getting API Keys
 
-### OpenRouter API Key
-1. Visit [OpenRouter](https://openrouter.ai)
-2. Sign up and create an account
-3. Go to **Keys** section
-4. Create a new API key
-5. Copy it to `.env`
+### OpenRouter
+1. Visit [openrouter.ai](https://openrouter.ai)
+2. Sign up → Keys → Create new key
+3. Copy to `.env`
 
-### LangSmith API Key (Optional)
-1. Visit [LangSmith](https://smith.langchain.com)
-2. Sign up and create an account
-3. Go to **Settings** → **API Keys**
-4. Create a new API key
-5. Copy it to `.env`
+### LangSmith (optional, for tracing)
+1. Visit [smith.langchain.com](https://smith.langchain.com)
+2. Settings → API Keys → Create new key
+3. Copy to `.env`
 
 ---
 
-## Testing API Connections
+## Monitoring
 
-> **Note**: `test-chat.py` is a TEST FILE only. It verifies that OpenRouter API and LangSmith tracing work correctly. It does NOT represent the actual Buy-Bot implementation.
-
-```bash
-python test-chat.py
-```
-
----
-
-## Monitoring Traces
-
-After running the chatbot:
-
-1. Visit [LangSmith Dashboard](https://smith.langchain.com)
-2. Select project **buy-bot**
-3. View all conversation traces with inputs/outputs
-4. Analyze latency, token usage, and performance
+After running the bot, view all conversation traces at [smith.langchain.com](https://smith.langchain.com) under project **buy-bot**.
 
 ---
 
 ## Troubleshooting
 
-### "OPENROUTER_API_KEY not found"
-- Make sure `.env` file exists and contains the key
-- Ensure `.env` is in the project root (not inside `rasa_bot/`)
-
-### "rasa: command not found"
-- Ensure your virtual environment is activated
-- Run `pip install rasa==3.6.20`
-
-### Action server not responding
-- Make sure `rasa run actions` is running in a separate terminal
-- Check that port 5055 is not blocked by a firewall
-
-### "No traces appearing in LangSmith"
-- Verify `LANGSMITH_API_KEY` is correct in `.env`
-- Check `LANGSMITH_TRACING=true` is set
-
-### Slow LLM responses
-- The bot uses free OpenRouter models with rate limits
-- Fallback models are tried automatically
-- Reduce `max_tokens` in `langgraph_agents/agents/_llm.py` if needed
+| Error | Fix |
+|---|---|
+| `OPENROUTER_API_KEY not found` | Check `.env` exists in project root |
+| `rasa: command not found` | Activate venv, run `pip install rasa==3.6.21` |
+| Action server not responding | Run `rasa run actions` in a separate terminal (port 5055) |
+| No LangSmith traces | Verify `LANGSMITH_API_KEY` and `LANGSMITH_TRACING=true` in `.env` |

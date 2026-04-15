@@ -1,27 +1,20 @@
-# Buy-Bot Architecture – Rasa + LangGraph Agents
+# Buy-Bot Architecture
 
-Technical design for Buy-Bot using Rasa NLU and LangGraph specialized agents.
+Technical design for Buy-Bot using Rasa NLU and a LangGraph multi-agent pipeline.
 
-> 👉 **See [README.md](README.md) for user personas and example conversations**
-
----
-
-## 🎯 Design Philosophy
-
-Buy-Bot uses a **two-stage conversation approach**:
-
-1. **Intent Extraction** (Rasa) – Understand user needs
-2. **Specialized Agents** (LangGraph) – Deliver targeted conversation per use case
-
-Benefits:
-- Each agent asks the right questions for its use case
-- Conversation stays focused and efficient
-- Recommendations are highly tailored
-- User experience optimized per persona
+> See [README.md](README.md) for user personas and example conversations.
 
 ---
 
-## 🏗 System Architecture
+## Design Philosophy
+
+Buy-Bot uses a **staged pipeline**: Rasa handles structured intake, then a chain of LangGraph agents progressively refines the user profile and generates a tailored recommendation. A QA agent is available at every stage to handle off-script questions.
+
+Language adapts to the user. A user who mentions Premiere Pro or PyTorch gets spec-level detail (VRAM, CPU architecture, display color accuracy). A user who says "uni and Netflix" gets lifestyle language. The suggestion agent infers the right register from the `user_profile` built during the conversation — no explicit flag needed.
+
+---
+
+## System Architecture
 
 ```
 ┌─────────────────┐
@@ -29,273 +22,282 @@ Benefits:
 └────────┬────────┘
          │
          ▼
-┌─────────────────────────────────┐
-│   Rasa NLU - Intent Extraction  │
-│  Extracts: budget, use_case,    │
-│  mobility, performance, etc.    │
-└────────────┬────────────────────┘
-             │
+┌──────────────────────────────────────┐
+│  Stage 1 — Rasa NLU (intake)         │
+│  Collects: budget, OS, use_case,     │
+│  mobility via structured forms       │
+└────────────┬─────────────────────────┘
+             │  structured slot payload
              ▼
-┌─────────────────────────────────┐
-│  LangGraph Agent Router         │
-│  Selects appropriate agent      │
-└────────────┬────────────────────┘
-             │
-     ┌───────┼───────┐
-     ▼       ▼       ▼
-   ┌──────┬──────┬──────┐
-   │ Uni  │Gaming│Work  │
-   │Agent │Agent │Agent │
-   └──────┴──────┴──────┘
-     │       │       │
-     └───────┼───────┘
+┌──────────────────────────────────────┐
+│  Stage 2 — Router LLM                │
+│  Routes to one of 4 expert agents    │
+└──────┬─────────┬──────────┬──────────┘
+       │         │          │         │
+       ▼         ▼          ▼         ▼
+  ┌────────┐ ┌──────┐ ┌──────────┐ ┌────────────┐
+  │  Uni   │ │Gaming│ │ Profess- │ │  Private / │
+  │ Agent  │ │Agent │ │  ional   │ │   Office   │
+  │        │ │      │ │  Agent   │ │   Agent    │
+  └────┬───┘ └──┬───┘ └────┬─────┘ └─────┬──────┘
+       └────────┴──────────┴─────────────┘
+             │  enriched user_profile
              ▼
-┌─────────────────────────────────┐
-│  Recommendation Engine          │
-│  Product matching & filtering   │
-└────────────┬────────────────────┘
-             │
+┌──────────────────────────────────────┐
+│  Stage 4 — Search Agent              │
+│  Queries laptops.db                  │
+│  Returns: 1 primary + 1 alternative  │
+└────────────┬─────────────────────────┘
+             │  2 laptop candidates + user_profile
              ▼
-┌─────────────────────────────────┐
-│  Output: 2-4 Recommendations    │
-│  with explanations              │
-└─────────────────────────────────┘
+┌──────────────────────────────────────┐
+│  Stage 5 — Suggestion Agent          │
+│  Generates natural-language          │
+│  recommendation (language adapted    │
+│  to user technical level)            │
+└──────────────────────────────────────┘
+
+         ┌──────────────────────────────┐
+         │  QA Agent (always-on)        │
+         │  Intercepts at any stage:    │
+         │  product questions,          │
+         │  "why did you ask that?",    │
+         │  spec explanations           │
+         └──────────────────────────────┘
 ```
 
 ---
 
-## 🧠 Rasa NLU Component
+## Stage 1 — Rasa NLU (Intake)
 
-### Extracted Intents
+Handles the opening turns. Uses slot-filling forms to extract exactly 4 values before handing off.
 
-| Intent | Triggers | Agent |
-|--------|----------|-------|
-| `university` | "student", "uni", "study", "school" | Uni Agent |
-| `gaming` | "game", "esports", "fps", "gaming" | Gaming Agent |
-| `work` | "work", "professional", "office", "business" | Work Agent |
-| `entertainment` | "movie", "streaming", "video editing" | General Agent |
-| `mixed` | Multiple use cases | Multi-purpose Agent |
+### Extracted Slots
 
-### Extracted Entities
+| Slot | Type | Example |
+|---|---|---|
+| `budget` | float | `800.0`, `1500.0` |
+| `preferred_os` | string | `windows`, `macos`, `no_preference` |
+| `use_case` | string | `gaming`, `university`, `professional`, `office` |
+| `mobility` | string | `high`, `medium`, `low` |
 
-| Entity | Type | Example |
-|--------|------|---------|
-| `budget` | float | `800.0`, `1500.0` (not translated) |
-| `use_case` | string | "university", "gaming", "work" |
-| `mobility` | string | "high", "medium", "low" |
-| `performance` | string | "high", "medium", "low" |
-| `screen_size` | string | "small", "medium", "large" |
+### Intent → Agent Routing
 
-### Rasa Training Data Structure
+| Intent | Routed To |
+|---|---|
+| `university` | Uni Agent |
+| `gaming` | Gaming Agent |
+| `professional` | Professional Agent |
+| `office` / `private` | Private/Office Agent |
 
-```yaml
-version: "3.1"
-nlu:
-- intent: university
-  examples: |
-    - I'm a student
-    - I need a laptop for uni
-    - Budget [800](budget) CHF for studying
-    
-- intent: gaming
-  examples: |
-    - I want to play games
-    - Gaming laptop needed
-    - [1500](budget) CHF for gaming
-```
-
----
-
-## 🤖 LangGraph Agent System
-
-### Agent Base Class
+### Handoff Payload
 
 ```python
-class SpecializedAgent:
-    def __init__(self, intent: dict):
-        self.intent = intent
-        self.llm = ChatOpenAI(model="...")
-        self.product_db = ProductDatabase()
-    
-    def ask_questions(self) -> dict:
-        """Ask use-case-specific questions"""
-        pass
-    
-    def recommend_products(self, user_profile: dict) -> List[Laptop]:
-        """Return 2-4 tailored recommendations"""
-        pass
-```
-
-### Three Agent Types
-
-**Uni Agent:**
-- Target: Students
-- Focus: Lightweight, battery life, reliability
-
-**Gaming Agent:**
-- Target: Gamers
-- Focus: GPU/CPU performance, refresh rate
-
-**Work Agent:**
-- Target: Professionals
-- Focus: Reliability, productivity, security
-
----
-
-## 🗄 Product Database
-
-### Laptop Schema
-
-```python
-@dataclass
-class Laptop:
-    id: str
-    name: str
-    brand: str
-    price: float
-    
-    # Hardware
-    cpu: str  # "Intel Core i5-13420H"
-    gpu: str  # "RTX 4060" or "Integrated"
-    ram_min: int  # GB
-    storage: int  # GB
-    
-    # Display
-    screen_size: float  # inches
-    refresh_rate: int  # Hz
-    resolution: str  # "1920x1200"
-    
-    # Physical
-    weight: float  # kg
-    battery_life: float  # hours
-    color: str
-    
-    # Classification
-    use_case: List[str]  # ["university", "gaming", "work"]
-    tier: str  # "budget", "mid", "premium"
-    
-    # Details
-    description: str
-    pros: List[str]
-    cons: List[str]
-    best_for: str
-```
-
-### Product Matching Algorithm
-
-```python
-def match_products(user_profile: dict) -> List[Laptop]:
-    # Budget is float extracted by Rasa (e.g., 800.0)
-    budget = user_profile.get("budget", 1000.0)
-    
-    # Filter with 20% margin (± 20% from budget)
-    price_min = budget * 0.8
-    price_max = budget * 1.2
-    
-    candidates = laptop_db.filter(
-        price_min=price_min,
-        price_max=price_max,
-        use_case=user_profile["primary_use_case"]
-    )
-    
-    # Score by relevance to user profile
-    scored = []
-    for laptop in candidates:
-        score = calculate_score(laptop, user_profile)
-        scored.append((laptop, score))
-    
-    # Return top 4 matches
-    return sorted(scored, key=lambda x: x[1], reverse=True)[:4]
-```
-
----
-
-## 🧠 Conversation State
-
-### LangSmith Tracing
-
-Every conversation is logged automatically:
-- Input (user message)
-- Rasa NLU extraction (intent, entities)
-- Selected agent
-- Agent questions & responses
-- Final recommendations
-- Latency & token usage
-
-### Agent State
-
-```python
-agent_state = {
-    "intent": {...},
-    "user_profile": {
-        "budget": 800.0,
-        "use_case": "university",
-        "mobility": "high",
-        ...
-    },
-    "questions_asked": [...],
-    "conversation_history": [...],
-    "recommendations": [...],
-    "timestamp": "2026-04-09T10:30:00Z"
+{
+    "budget": 900.0,
+    "preferred_os": "windows",
+    "use_case": "gaming",
+    "mobility": "high"
 }
 ```
 
 ---
 
-## 🔄 Implementation Roadmap
+## Stage 2 — Router LLM
 
-### Phase 1: Infrastructure Testing ✅
-- [x] test-chat.py - OpenRouter API verification
-- [x] LangSmith tracing setup
-- [x] Documentation
-
-### Phase 2: Rasa NLU Setup 🔵
-- [ ] Install Rasa
-- [ ] Create training data (nlu.yml)
-- [ ] Train NLU model
-- [ ] Test intent extraction
-- [ ] Integrate with Python backend
-
-### Phase 3: Agent Development 🔵
-- [ ] Create Agent base class
-- [ ] Implement UniAgent
-- [ ] Implement GamingAgent
-- [ ] Implement WorkAgent
-- [ ] Create agent router
-
-### Phase 4: Product System 🔵
-- [ ] Design product database schema
-- [ ] Load product data
-- [ ] Implement matching algorithm
-- [ ] Create product descriptions
-
-### Phase 5: Integration 🔵
-- [ ] Connect Rasa → Agent Router → LangGraph
-- [ ] Test full conversation flow
-- [ ] Performance optimization
-- [ ] LangSmith monitoring
-
-### Phase 6: Frontend Interfaces 🔵
-- [ ] Streamlit app (simple web interface)
-- [ ] Telegram bot integration
+Receives the Rasa payload and selects the appropriate expert agent. Handles ambiguous cases (e.g. "gaming and some coding") by picking the dominant use case or asking one clarifying question.
 
 ---
 
-## 🚀 Deployment
+## Stage 3 — Expert Agents
 
-### Infrastructure
-- Rasa model serving (separate server or integrated)
-- LangGraph agent execution (async support)
-- Product database (SQL or NoSQL)
-- Message queue for conversation logging (Redis/RabbitMQ)
+Each agent asks domain-specific follow-up questions to build a detailed `user_profile`.
 
-### Monitoring
-- LangSmith dashboard for conversations
-- Error tracking (Sentry/DataDog)
-- Performance metrics (response time, tokens)
+### Uni Agent
+Target: students carrying the laptop daily to campus.
+
+Follow-up questions:
+- How long are your days away from a charger?
+- Priority: battery life or display quality?
+- Do you need it for any creative work (design, video)?
+
+### Gaming Agent
+Target: gamers, may also use for uni.
+
+Follow-up questions:
+- Which games? (esports titles like CS2/LoL vs. AAA like Cyberpunk)
+- Desktop-replacement or carry it daily?
+- Willing to trade weight for GPU power?
+
+### Professional Agent
+Target: coders, video/photo editors, 3D artists, ML engineers.
+
+Follow-up questions:
+- Which software? (Premiere Pro, DaVinci, VS Code, PyTorch, Blender, etc.)
+- Do you need 4K export or real-time preview?
+- macOS or Windows toolchain?
+- External monitors used, or laptop screen is primary?
+
+### Private / Office Agent
+Target: home users, office workers, business travellers.
+
+Follow-up questions:
+- Mainly at a desk or on the move?
+- Video calls important? (webcam quality, microphone)
+- Any IT/security requirements (IR camera, fingerprint, Windows Hello)?
+
+### Enriched user_profile after Stage 3
+
+```python
+{
+    "budget": 900.0,
+    "preferred_os": "windows",
+    "use_case": "gaming",
+    "mobility": "high",
+    "games": ["CS2", "League of Legends"],
+    "carry_daily": True,
+    "gpu_priority": "medium"   # esports, not AAA
+}
+```
 
 ---
 
-**Version:** 1.0  
-**Status:** Planning Phase  
-**Next Step:** Implement Rasa NLU component
+## Stage 4 — Search Agent
+
+Queries `data/laptops.db` against the `user_profile`. Returns exactly 2 results.
+
+### Filtering logic
+
+```python
+# Budget: +/- 20% margin
+price_min = budget * 0.8
+price_max = budget * 1.2
+
+# Filter by use_case via laptop_use_cases table
+# Filter by preferred_os if not no_preference
+# Filter by gaming_tier if use_case == gaming
+# Filter by weight_kg if mobility == high (< 2.0 kg preferred)
+```
+
+### Output
+- **Primary match** — best fit for stated requirements
+- **Alternative** — different trade-off (e.g. lighter, cheaper, or one tier higher spec)
+
+---
+
+## Stage 5 — Suggestion Agent
+
+Receives the 2 laptops and full `user_profile`. Generates a natural-language recommendation.
+
+### Language adaptation
+The agent reads the `user_profile` to calibrate vocabulary:
+- User mentioned Blender / PyTorch / Premiere → use specs (VRAM, CPU cores, color gamut %)
+- User mentioned "uni and Netflix" → use lifestyle language, no jargon
+- Mixed profile (gaming + coding) → lead with relevant spec, explain others briefly
+
+### Output format
+- Brief explanation of why the primary match fits
+- Key specs called out (in appropriate language)
+- What the alternative trades off and why someone would choose it
+- One closing prompt (e.g. "Want to compare these two side by side?")
+
+---
+
+## QA Agent (Always-On)
+
+Intercepts messages at any stage when the user asks something off the main flow.
+
+### Handled question types
+- **"Why are you asking that?"** — explains relevance of the last question to the recommendation
+- **Product questions** — "Does this have Thunderbolt?", "How much VRAM does it have?"
+- **Spec explanations** — "What is refresh rate?", "What does OLED mean?"
+- **Policy questions** — warranty, returns, shipping (via knowledge base / RAG)
+
+After answering, the QA agent hands back to wherever the main flow was interrupted.
+
+---
+
+## Product Database
+
+`data/laptops.db` — SQLite, 28 laptops, 84 columns.
+
+| Category | Count | Price range (CHF) |
+|---|---|---|
+| MacBook | 6 | 1 299 – 3 999 |
+| Everyday / Work | 12 | 599 – 1 999 |
+| Gaming | 10 | 849 – 4 299 |
+
+Key filterable columns: `price_chf`, `category`, `gaming_tier`, `weight_kg`, `battery_life_hours`, `ram_gb`, `npu_tops`, `display_panel_type`, `gpu_model`, `gpu_tgp_w`.
+
+Use-case filtering via `laptop_use_cases` junction table (198 rows).
+
+Rebuild DB at any time:
+```bash
+python data/init_db.py
+```
+
+---
+
+## Tech Stack
+
+| Component | Technology |
+|---|---|
+| NLU / intake | Rasa (slot-filling forms, intents, entities) |
+| Agent orchestration | LangGraph |
+| LLM API | OpenRouter |
+| Conversation tracing | LangSmith |
+| Product database | SQLite (`laptops.db`) |
+| Frontend — web | Streamlit |
+| Frontend — chat | Telegram Bot |
+
+---
+
+## Project Structure (target)
+
+```
+dialogsystem-projekt_FHNW/
+├── rasa_bot/                    # Rasa intake layer
+│   ├── domain.yml               # Intents, slots, responses
+│   ├── config.yml               # NLU pipeline and policies
+│   ├── data/
+│   │   ├── nlu.yml              # Training examples
+│   │   ├── stories.yml
+│   │   └── rules.yml
+│   └── actions/
+│       └── actions.py           # Webhook: triggers LangGraph pipeline
+├── agents/                      # LangGraph pipeline
+│   ├── graph.py                 # Graph definition and stage wiring
+│   ├── router.py                # Routes Rasa payload to expert agent
+│   ├── uni_agent.py
+│   ├── gaming_agent.py
+│   ├── professional_agent.py
+│   ├── office_agent.py
+│   ├── search_agent.py          # Queries laptops.db
+│   ├── suggestion_agent.py      # Generates recommendation text
+│   └── qa_agent.py              # Always-on QA / interruption handler
+├── data/
+│   ├── laptops.sql              # Source schema + data
+│   ├── laptops.db               # Compiled SQLite database
+│   ├── init_db.py               # Rebuilds laptops.db from laptops.sql
+│   └── policies.md              # Store policies for RAG (QA agent)
+├── frontend/
+│   ├── streamlit_app.py
+│   └── telegram_bot.py
+├── test-chat.py                 # API connection test only
+├── requirements.txt
+└── .env.example
+```
+
+---
+
+## Implementation Roadmap
+
+| Phase | Scope | Status |
+|---|---|---|
+| 1 | Infrastructure: API connections, LangSmith tracing | Done |
+| 2 | Product database: schema, 28 laptops, SQLite | Done |
+| 3 | Rasa NLU: intents, slot forms, handoff webhook | Next |
+| 4 | LangGraph pipeline: router + 4 expert agents | Planned |
+| 5 | Search agent + suggestion agent | Planned |
+| 6 | QA agent (always-on interruption handler) | Planned |
+| 7 | Frontend: Streamlit + Telegram | Planned |

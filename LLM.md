@@ -4,135 +4,88 @@ Quick reference for AI assistants working on Buy-Bot.
 
 ---
 
-## 📁 File Guide
+## File Guide
 
 | File | Purpose | Read If |
-|------|---------|---------|
-| **README.md** | Personas, example dialogs, problem/solution | Understanding the project context & user needs |
-| **ARCHITECTURE.md** | Technical design, Rasa, agents, database | Implementing the system |
-| **SETUP.md** | Installation, testing, dependencies | Setting up local environment |
-| **CHANGELOG.md** | Development progress log | Tracking what's been done |
-| **test-chat.py** | API connection test file | Testing OpenRouter + LangSmith integration |
+|---|---|---|
+| **README.md** | Personas, example dialogs, problem/solution | Understanding project context and user needs |
+| **ARCHITECTURE.md** | Full technical design, all agents, database | Implementing any part of the system |
+| **SETUP.md** | Installation, dependencies, environment | Setting up the local environment |
+| **CHANGELOG.md** | Development progress log | Tracking what has been done |
+| **test-chat.py** | API connection test only | Testing OpenRouter + LangSmith integration |
 
 ---
 
-## 🎯 Quick Start for AI Assistants
+## Pipeline Overview
 
-1. **Start here:** Read [README.md](README.md) for context
-   - Personas (Laura, Maca)
-   - Example dialogs
-   - Bot personality
-   - Problem/solution statement
+```
+Rasa NLU (intake)
+    → Router LLM
+        → Expert Agent (one of 4)
+            → Search Agent (queries laptops.db)
+                → Suggestion Agent (final recommendation)
 
-2. **Then:** Read [ARCHITECTURE.md](ARCHITECTURE.md) for technical design
-   - Rasa NLU (intent extraction)
-   - LangGraph agents (Uni, Gaming, Work)
-   - Product database schema
-   - Implementation roadmap
-
-3. **Setup:** Follow [SETUP.md](SETUP.md) to install dependencies
-   - Virtual environment
-   - Requirements
-   - Environment variables
-
-4. **Track progress:** Check [CHANGELOG.md](CHANGELOG.md)
-   - Completed work
-   - Current status
-   - Next steps
+QA Agent intercepts at any stage for off-script questions.
+```
 
 ---
 
-## 🔑 Key Concepts
+## Key Concepts
 
-### Two-Stage Architecture
-1. **Rasa NLU** → Extracts: budget (float), use_case, mobility, performance
-2. **LangGraph Agents** → Routes to: Uni Agent / Gaming Agent / Work Agent
+### Rasa Intake (Stage 1)
+Collects 4 slots via structured forms, then hands off a payload:
+```python
+{ "budget": 900.0, "preferred_os": "windows", "use_case": "gaming", "mobility": "high" }
+```
+
+### Four Expert Agents (Stage 3)
+| Agent | Target User | Key Focus |
+|---|---|---|
+| Uni Agent | Students | Battery, weight, value |
+| Gaming Agent | Gamers | GPU tier, refresh rate, thermal |
+| Professional Agent | Coders, editors, ML engineers | CPU/GPU power, display accuracy, RAM |
+| Private/Office Agent | Home users, business | Build, webcam, security features |
+
+### Language Adaptation
+The suggestion agent reads the `user_profile` to calibrate tone:
+- Technical users (mentioned specific software/games) → use specs directly
+- Non-technical users → translate specs into lifestyle language
+- No explicit flag needed — the LLM infers from context
 
 ### Budget Handling
-- Extracted as **float** (e.g., 800.0, 1500.0)
-- NOT translated to "low/medium/high"
-- Used with 20% margin for product filtering (±20% from budget)
+- Extracted as float (e.g. `800.0`) — never translated to "low/medium/high"
+- Search agent applies ±20% margin: `budget * 0.8` to `budget * 1.2`
 
-### Three Agent Types
-| Agent | Optimized For | Key Attributes |
-|-------|---------------|----------------|
-| Uni Agent | Students | Lightweight, battery life, reliability |
-| Gaming Agent | Gamers | GPU/CPU, refresh rate, performance |
-| Work Agent | Professionals | Build quality, security, reliability |
-
-### Frontend
-- **Streamlit App** – Simple web interface for testing
-- **Telegram Bot** – Chat-based access
+### Product Database
+- `data/laptops.db` — SQLite, 28 laptops, 84 columns
+- `data/laptops.sql` — source schema + all INSERT statements
+- `data/init_db.py` — rebuilds the DB: `python data/init_db.py`
+- `laptop_use_cases` table — junction table for use-case tag filtering (198 rows)
 
 ---
 
-## 📝 Important Implementation Details
+## Implementation Status
 
-### From README.md (Personas)
-- **Laura:** Uni student, 800 CHF, needs light portable laptop
-- **Maca:** Gaming student, 900 CHF, needs gaming performance
-
-### From ARCHITECTURE.md (Technical)
-- Rasa extracts entities into structured dict
-- LangGraph routes based on intent
-- Product matching uses 20% budget margin (budget * 0.8 to budget * 1.2)
-- Each agent maintains conversation state with user_profile
-- LangSmith logs all conversations automatically
-
-### From test-chat.py (Infrastructure)
-- Tests OpenRouter API connectivity
-- Tests LangSmith tracing integration
-- Demonstrates message history management
-- Shows safeguard implementation
+| Phase | Scope | Status |
+|---|---|---|
+| 1 | Infrastructure: API, LangSmith | Done |
+| 2 | Product database: 28 laptops, SQLite | Done |
+| 3 | Rasa NLU: intents, slot forms, webhook | Next |
+| 4 | LangGraph: router + 4 expert agents | Planned |
+| 5 | Search agent + suggestion agent | Planned |
+| 6 | QA agent | Planned |
+| 7 | Frontend: Streamlit + Telegram | Planned |
 
 ---
 
-## 🚀 When to Reference Files
+## Important Constraints
 
-**Need to understand user needs?**
-→ Read [README.md](README.md) personas and dialogs
-
-**Need to implement Rasa NLU?**
-→ Read [ARCHITECTURE.md](ARCHITECTURE.md) Rasa section
-
-**Need to build a LangGraph agent?**
-→ Read [ARCHITECTURE.md](ARCHITECTURE.md) Agent System section
-
-**Need to understand the product database?**
-→ Read [ARCHITECTURE.md](ARCHITECTURE.md) Product Database section
-
-**Need to see example code?**
-→ Check [test-chat.py](test-chat.py) for patterns
-
-**Need to know what's done?**
-→ Check [CHANGELOG.md](CHANGELOG.md)
+- Budget always as float — never "low/medium/high"
+- Search returns exactly 2 results: 1 primary + 1 alternative
+- QA agent must be able to interrupt and resume any stage
+- Language in bot responses adapts to user technical level — no fixed register
 
 ---
 
-## ⚠️ Key Constraints
-
-✅ **Always keep:**
-- Budget as float (800.0, not "low")
-- 20% margin for product filtering
-- Simple language (no technical jargon in Bot responses)
-- 2-4 recommendations per conversation
-
-❌ **Don't add:**
-- Session management
-- Feedback collection
-- Complex authentication
-- Advanced analytics
-
----
-
-## 🔗 External Resources
-
-- **LangGraph Docs:** https://langgraph.dev
-- **Rasa Docs:** https://rasa.com/docs/
-- **OpenRouter Docs:** https://openrouter.ai/docs
-- **LangSmith Docs:** https://docs.smith.langchain.com
-
----
-
-**Last Updated:** 2026-04-09  
-**Status:** Active Development
+## Last Updated
+2026-04-15

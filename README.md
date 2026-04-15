@@ -107,18 +107,20 @@ Ein intelligenter Laptop-Kaufberater-Chatbot, der Kunden ohne technisches Vorwis
 
 ## 🏗 Architecture
 
-Buy-Bot uses **Rasa NLU + LangGraph Agents** for intelligent conversation:
+Buy-Bot uses a **staged pipeline**: Rasa NLU for structured intake, then LangGraph agents for deep profiling and recommendation.
 
-1. **Rasa NLU** – Extracts intent (budget, use_case, mobility, performance)
-2. **LangGraph Router** – Routes to specialized agent
-3. **Three Agents:**
-   - **Uni Agent** – For students (lightweight, battery life)
-   - **Gaming Agent** – For gamers (GPU/CPU performance)
-   - **Work Agent** – For professionals (reliability, productivity)
-4. **Recommendation Engine** – Matches user profile to products
-5. **Frontend** – Streamlit app + Telegram bot
+1. **Rasa NLU** – Collects budget, OS preference, use case, mobility
+2. **Router LLM** – Routes to the right expert agent
+3. **Four Expert Agents** – Ask targeted follow-up questions per use case:
+   - **Uni Agent** – Students (battery, weight, reliability)
+   - **Gaming Agent** – Gamers (GPU tier, refresh rate, portability trade-off)
+   - **Professional Agent** – Coders, video editors, ML engineers (CPU/GPU power, display)
+   - **Private/Office Agent** – Home users and business (comfort, security, video calls)
+4. **Search Agent** – Queries `laptops.db`, returns 1 primary + 1 alternative
+5. **Suggestion Agent** – Generates recommendation in language matching the user's technical level
+6. **QA Agent (always-on)** – Handles off-script questions at any point in the conversation
 
-> 👉 **Full technical details in [ARCHITECTURE.md](ARCHITECTURE.md)**
+> Full technical details in [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 
