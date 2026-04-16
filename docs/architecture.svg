@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="980" height="740" viewBox="0 0 980 740" xmlns="http://www.w3.org/2000/svg"
+     font-family="'Inter','Segoe UI',system-ui,sans-serif">
+
+  <defs>
+    <marker id="arr"      markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrGreen" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#059669"/>
+    </marker>
+    <marker id="arrPink"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#db2777"/>
+    </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#00000018"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="980" height="740" fill="#f8fafc" rx="0"/>
+
+  <!-- Title -->
+  <text x="490" y="36" text-anchor="middle" font-size="17" font-weight="700"
+        fill="#0f172a" letter-spacing="-0.2">Buy-Bot — System Architecture</text>
+
+  <!-- ─── USER INPUT ─── y 54-100 -->
+  <rect x="360" y="54" width="200" height="46" rx="8"
+        fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="460" y="73"  text-anchor="middle" font-size="12" font-weight="600" fill="#0c4a6e">User Input</text>
+  <text x="460" y="89"  text-anchor="middle" font-size="10" fill="#0369a1">Streamlit · Telegram</text>
+
+  <!-- arrow -->
+  <line x1="460" y1="100" x2="460" y2="120" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ─── RASA NLU ─── y 120-202 -->
+  <rect x="175" y="120" width="570" height="82" rx="8"
+        fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="460" y="142" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">Stage 1 — Rasa NLU</text>
+  <text x="460" y="160" text-anchor="middle" font-size="11" fill="#1d4ed8">Slot-filling forms: budget · preferred OS · use case · mobility</text>
+  <text x="460" y="178" text-anchor="middle" font-size="10" fill="#3b82f6">Handoff payload → { budget: float, preferred_os, use_case, mobility }</text>
+
+  <!-- arrow -->
+  <line x1="460" y1="202" x2="460" y2="222" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="474" y="216" font-size="9" fill="#64748b">payload</text>
+
+  <!-- ─── ROUTER LLM ─── y 222-274 -->
+  <rect x="290" y="222" width="340" height="52" rx="8"
+        fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="460" y="244" text-anchor="middle" font-size="13" font-weight="600" fill="#3730a3">Stage 2 — Router LLM</text>
+  <text x="460" y="261" text-anchor="middle" font-size="11" fill="#4338ca">Selects expert agent · resolves ambiguous use cases</text>
+
+  <!-- arrow -->
+  <line x1="460" y1="274" x2="460" y2="294" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ─── EXPERT AGENTS ─── y 294-384 -->
+  <rect x="138" y="294" width="644" height="90" rx="8"
+        fill="#f3e8ff" stroke="#9333ea" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="460" y="315" text-anchor="middle" font-size="13" font-weight="600" fill="#581c87">Stage 3 — Expert Agents</text>
+
+  <!-- Uni -->
+  <rect x="152" y="324" width="142" height="50" rx="5" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1"/>
+  <text x="223" y="343" text-anchor="middle" font-size="11" font-weight="600" fill="#4c1d95">Uni</text>
+  <text x="223" y="358" text-anchor="middle" font-size="9"  fill="#6d28d9">battery · weight · value</text>
+
+  <!-- Gaming -->
+  <rect x="302" y="324" width="142" height="50" rx="5" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1"/>
+  <text x="373" y="343" text-anchor="middle" font-size="11" font-weight="600" fill="#4c1d95">Gaming</text>
+  <text x="373" y="358" text-anchor="middle" font-size="9"  fill="#6d28d9">GPU · refresh · thermal</text>
+
+  <!-- Professional -->
+  <rect x="452" y="324" width="142" height="50" rx="5" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1"/>
+  <text x="523" y="343" text-anchor="middle" font-size="11" font-weight="600" fill="#4c1d95">Professional</text>
+  <text x="523" y="358" text-anchor="middle" font-size="9"  fill="#6d28d9">CPU · VRAM · display</text>
+
+  <!-- Office -->
+  <rect x="602" y="324" width="166" height="50" rx="5" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1"/>
+  <text x="685" y="343" text-anchor="middle" font-size="11" font-weight="600" fill="#4c1d95">Private / Office</text>
+  <text x="685" y="358" text-anchor="middle" font-size="9"  fill="#6d28d9">build · webcam · security</text>
+
+  <!-- arrow -->
+  <line x1="460" y1="384" x2="460" y2="404" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="474" y="398" font-size="9" fill="#64748b">user_profile</text>
+
+  <!-- ─── SEARCH AGENT ─── y 404-462 -->
+  <rect x="260" y="404" width="330" height="58" rx="8"
+        fill="#d1fae5" stroke="#059669" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="425" y="427" text-anchor="middle" font-size="13" font-weight="600" fill="#064e3b">Stage 4 — Search Agent</text>
+  <text x="425" y="445" text-anchor="middle" font-size="11" fill="#065f46">Queries laptops.db</text>
+  <text x="425" y="458" text-anchor="middle" font-size="10" fill="#059669">→ 1 primary match + 1 alternative</text>
+
+  <!-- DB box -->
+  <rect x="626" y="404" width="148" height="58" rx="8"
+        fill="#dcfce7" stroke="#16a34a" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="700" y="426" text-anchor="middle" font-size="12" font-weight="700" fill="#14532d">laptops.db</text>
+  <text x="700" y="442" text-anchor="middle" font-size="10" fill="#15803d">28 laptops · 84 cols</text>
+  <text x="700" y="456" text-anchor="middle" font-size="10" fill="#15803d">SQLite</text>
+  <!-- dashed arrow search → DB -->
+  <line x1="590" y1="433" x2="626" y2="433" stroke="#059669" stroke-width="1.5"
+        stroke-dasharray="4,3" marker-end="url(#arrGreen)"/>
+
+  <!-- arrow -->
+  <line x1="425" y1="462" x2="425" y2="482" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="439" y="476" font-size="9" fill="#64748b">2 candidates</text>
+
+  <!-- ─── SUGGESTION AGENT ─── y 482-548 -->
+  <rect x="260" y="482" width="330" height="66" rx="8"
+        fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="425" y="504" text-anchor="middle" font-size="13" font-weight="600" fill="#134e4a">Stage 5 — Suggestion Agent</text>
+  <text x="425" y="522" text-anchor="middle" font-size="11" fill="#0f766e">Generates natural-language recommendation</text>
+  <text x="425" y="540" text-anchor="middle" font-size="10" fill="#0d9488">Language adapted to user technical level</text>
+
+  <!-- arrow -->
+  <line x1="425" y1="548" x2="425" y2="568" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ─── OUTPUT ─── y 568-612 -->
+  <rect x="310" y="568" width="230" height="44" rx="8"
+        fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="425" y="588" text-anchor="middle" font-size="12" font-weight="600" fill="#0c4a6e">Recommendation</text>
+  <text x="425" y="604" text-anchor="middle" font-size="10" fill="#0369a1">primary · alternative · explanation</text>
+
+  <!-- ─── QA AGENT (right column, always-on) ─── -->
+  <rect x="806" y="120" width="158" height="438" rx="8"
+        fill="#fdf2f8" stroke="#db2777" stroke-width="1.5"
+        stroke-dasharray="7,4" filter="url(#shadow)"/>
+  <text x="885" y="144" text-anchor="middle" font-size="13" font-weight="700" fill="#831843">QA Agent</text>
+  <text x="885" y="161" text-anchor="middle" font-size="10" fill="#be185d">(always-on)</text>
+
+  <line x1="825" y1="170" x2="948" y2="170" stroke="#fbcfe8" stroke-width="0.8"/>
+  <text x="885" y="185" text-anchor="middle" font-size="10" font-weight="600" fill="#9d174d">Intercepts at any stage</text>
+  <text x="885" y="200" text-anchor="middle" font-size="10" fill="#9d174d">Resumes flow after reply</text>
+
+  <line x1="825" y1="212" x2="948" y2="212" stroke="#fbcfe8" stroke-width="0.8"/>
+  <text x="885" y="228" text-anchor="middle" font-size="10" fill="#9d174d">• "Why did you ask that?"</text>
+  <text x="885" y="248" text-anchor="middle" font-size="10" fill="#9d174d">• Product spec questions</text>
+  <text x="885" y="268" text-anchor="middle" font-size="10" fill="#9d174d">• Jargon explanations</text>
+  <text x="885" y="288" text-anchor="middle" font-size="10" fill="#9d174d">• Policy questions (RAG)</text>
+
+  <line x1="825" y1="302" x2="948" y2="302" stroke="#fbcfe8" stroke-width="0.8"/>
+  <text x="885" y="318" text-anchor="middle" font-size="10" font-weight="600" fill="#9d174d">RAG source</text>
+  <text x="885" y="334" text-anchor="middle" font-size="10" fill="#9d174d">policies.md</text>
+  <text x="885" y="350" text-anchor="middle" font-size="10" fill="#9d174d">warranty · returns</text>
+  <text x="885" y="366" text-anchor="middle" font-size="10" fill="#9d174d">shipping</text>
+
+  <!-- Dashed connectors from pipeline to QA box -->
+  <!-- from Rasa row -->
+  <line x1="745" y1="161" x2="806" y2="161" stroke="#fbcfe8" stroke-width="1"
+        stroke-dasharray="4,3" marker-end="url(#arrPink)"/>
+  <!-- from Expert agents row -->
+  <line x1="782" y1="339" x2="806" y2="339" stroke="#fbcfe8" stroke-width="1"
+        stroke-dasharray="4,3" marker-end="url(#arrPink)"/>
+  <!-- from Search row -->
+  <line x1="774" y1="433" x2="806" y2="433" stroke="#fbcfe8" stroke-width="1"
+        stroke-dasharray="4,3" marker-end="url(#arrPink)"/>
+
+  <!-- ─── LANGSMITH ─── -->
+  <rect x="806" y="586" width="158" height="58" rx="8"
+        fill="#f1f5f9" stroke="#64748b" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="885" y="607" text-anchor="middle" font-size="12" font-weight="600" fill="#1e293b">LangSmith</text>
+  <text x="885" y="623" text-anchor="middle" font-size="10" fill="#475569">Conversation tracing</text>
+  <text x="885" y="637" text-anchor="middle" font-size="10" fill="#94a3b8">tokens · latency · logs</text>
+
+  <!-- Legend -->
+  <rect x="26" y="620" width="200" height="100" rx="6" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="126" y="638" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Legend</text>
+  <rect x="38" y="646" width="12" height="12" rx="2" fill="#dbeafe" stroke="#2563eb" stroke-width="1"/>
+  <text x="56" y="657" font-size="9" fill="#334155">Rasa NLU (intake)</text>
+  <rect x="38" y="664" width="12" height="12" rx="2" fill="#f3e8ff" stroke="#9333ea" stroke-width="1"/>
+  <text x="56" y="675" font-size="9" fill="#334155">LangGraph agents</text>
+  <rect x="38" y="682" width="12" height="12" rx="2" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+  <text x="56" y="693" font-size="9" fill="#334155">Database</text>
+  <rect x="38" y="700" width="12" height="12" rx="2" fill="#fdf2f8" stroke="#db2777" stroke-width="1"/>
+  <text x="56" y="711" font-size="9" fill="#334155">QA Agent (always-on, dashed)</text>
+
+</svg>

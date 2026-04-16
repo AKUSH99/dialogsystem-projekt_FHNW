@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1400" height="1040" viewBox="0 0 1400 1040" xmlns="http://www.w3.org/2000/svg"
+     font-family="'Inter','Segoe UI',system-ui,sans-serif">
+
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrBlue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#2563eb"/>
+    </marker>
+    <marker id="arrGreen" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#059669"/>
+    </marker>
+    <marker id="arrPurple" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#9333ea"/>
+    </marker>
+    <marker id="arrPink" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#db2777"/>
+    </marker>
+    <marker id="arrIndigo" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#4f46e5"/>
+    </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#00000018"/>
+    </filter>
+  </defs>
+
+  <rect width="1400" height="1040" fill="#f8fafc"/>
+
+  <!-- Title -->
+  <text x="700" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Buy-Bot -- Normalized Database Schema (SQLite)</text>
+  <text x="700" y="52" text-anchor="middle" font-size="11" fill="#64748b">8 tables · 28 laptops · 205 connectivity rows · 198 use-case rows</text>
+
+  <!-- ── TOP ROW: component reference tables ──────────────────────────────── -->
+
+  <!-- cpu_specs -->
+  <rect x="20" y="70" width="190" height="200" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="20" y="70" width="190" height="38" rx="8" fill="#2563eb"/>
+  <rect x="20" y="96"  width="190" height="12" fill="#2563eb"/>
+  <text x="115" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="white">cpu_specs</text>
+  <text x="115" y="106" text-anchor="middle" font-size="10" fill="#bfdbfe">20 rows</text>
+  <line x1="20" y1="110" x2="210" y2="110" stroke="#93c5fd" stroke-width="0.8"/>
+  <text x="32" y="125" font-size="9" font-weight="600" fill="#1e3a8a">PK cpu_id</text>
+  <text x="32" y="139" font-size="9" fill="#1d4ed8">brand · model</text>
+  <text x="32" y="153" font-size="9" fill="#1d4ed8">architecture</text>
+  <text x="32" y="167" font-size="9" fill="#1d4ed8">cores / threads</text>
+  <text x="32" y="181" font-size="9" fill="#1d4ed8">base_ghz / boost_ghz</text>
+  <text x="32" y="195" font-size="9" fill="#1d4ed8">tdp_w</text>
+  <text x="115" y="252" text-anchor="middle" font-size="8" fill="#64748b">Intel · AMD · Apple  |  9 cols</text>
+
+  <!-- gpu_specs -->
+  <rect x="230" y="70" width="190" height="172" rx="8" fill="#d1fae5" stroke="#059669" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="230" y="70" width="190" height="38" rx="8" fill="#059669"/>
+  <rect x="230" y="96"  width="190" height="12" fill="#059669"/>
+  <text x="325" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="white">gpu_specs</text>
+  <text x="325" y="106" text-anchor="middle" font-size="10" fill="#a7f3d0">18 rows</text>
+  <line x1="230" y1="110" x2="420" y2="110" stroke="#6ee7b7" stroke-width="0.8"/>
+  <text x="242" y="125" font-size="9" font-weight="600" fill="#064e3b">PK gpu_id</text>
+  <text x="242" y="139" font-size="9" fill="#065f46">type (integrated / dedicated)</text>
+  <text x="242" y="153" font-size="9" fill="#065f46">model</text>
+  <text x="242" y="167" font-size="9" fill="#065f46">architecture</text>
+  <text x="242" y="181" font-size="9" fill="#065f46">vram_gb</text>
+  <text x="325" y="225" text-anchor="middle" font-size="8" fill="#64748b">NVIDIA · AMD · Intel · Apple  |  5 cols</text>
+
+  <!-- ram_specs -->
+  <rect x="440" y="70" width="190" height="186" rx="8" fill="#f3e8ff" stroke="#9333ea" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="440" y="70" width="190" height="38" rx="8" fill="#9333ea"/>
+  <rect x="440" y="96"  width="190" height="12" fill="#9333ea"/>
+  <text x="535" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="white">ram_specs</text>
+  <text x="535" y="106" text-anchor="middle" font-size="10" fill="#e9d5ff">16 rows</text>
+  <line x1="440" y1="110" x2="630" y2="110" stroke="#c4b5fd" stroke-width="0.8"/>
+  <text x="452" y="125" font-size="9" font-weight="600" fill="#3b0764">PK ram_id</text>
+  <text x="452" y="139" font-size="9" fill="#4c1d95">gb · type</text>
+  <text x="452" y="153" font-size="9" fill="#4c1d95">speed_mhz</text>
+  <text x="452" y="167" font-size="9" fill="#4c1d95">upgradeable</text>
+  <text x="452" y="181" font-size="9" fill="#4c1d95">slots / max_gb</text>
+  <text x="535" y="238" text-anchor="middle" font-size="8" fill="#64748b">8 - 96 GB  |  7 cols</text>
+
+  <!-- storage_specs -->
+  <rect x="650" y="70" width="190" height="186" rx="8" fill="#fce7f3" stroke="#db2777" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="650" y="70" width="190" height="38" rx="8" fill="#db2777"/>
+  <rect x="650" y="96"  width="190" height="12" fill="#db2777"/>
+  <text x="745" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="white">storage_specs</text>
+  <text x="745" y="106" text-anchor="middle" font-size="10" fill="#fbcfe8">12 rows</text>
+  <line x1="650" y1="110" x2="840" y2="110" stroke="#f9a8d4" stroke-width="0.8"/>
+  <text x="662" y="125" font-size="9" font-weight="600" fill="#831843">PK storage_id</text>
+  <text x="662" y="139" font-size="9" fill="#9d174d">gb · type</text>
+  <text x="662" y="153" font-size="9" fill="#9d174d">pcie_gen</text>
+  <text x="662" y="167" font-size="9" fill="#9d174d">upgradeable</text>
+  <text x="662" y="181" font-size="9" fill="#9d174d">m2_slots</text>
+  <text x="745" y="238" text-anchor="middle" font-size="8" fill="#64748b">512 GB - 4 TB  |  6 cols</text>
+
+  <!-- connectivity_standards -->
+  <rect x="860" y="70" width="250" height="272" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="860" y="70" width="250" height="38" rx="8" fill="#d97706"/>
+  <rect x="860" y="96"  width="250" height="12" fill="#d97706"/>
+  <text x="985" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="white">connectivity_standards</text>
+  <text x="985" y="106" text-anchor="middle" font-size="10" fill="#fde68a">28 rows</text>
+  <line x1="860" y1="110" x2="1110" y2="110" stroke="#fcd34d" stroke-width="0.8"/>
+  <text x="872" y="125" font-size="9" font-weight="600" fill="#78350f">PK id</text>
+  <text x="872" y="139" font-size="9" fill="#92400e">name</text>
+  <text x="872" y="153" font-size="9" fill="#92400e">standard_type</text>
+  <text x="992" y="153" font-size="8" fill="#b45309">thunderbolt | usb_c | usb_a</text>
+  <text x="992" y="164" font-size="8" fill="#b45309">hdmi | sd | ethernet | audio</text>
+  <text x="992" y="175" font-size="8" fill="#b45309">wifi | bluetooth | dp | sim</text>
+  <text x="872" y="188" font-size="9" fill="#92400e">version</text>
+  <text x="872" y="202" font-size="9" fill="#92400e">max_speed_gbps</text>
+  <text x="872" y="216" font-size="9" fill="#92400e">max_power_w</text>
+  <text x="872" y="230" font-size="9" fill="#92400e">notes</text>
+  <line x1="860" y1="242" x2="1110" y2="242" stroke="#fcd34d" stroke-width="0.6"/>
+  <text x="872" y="256" font-size="8" fill="#b45309">e.g. tb4 / Thunderbolt 4 / 40 Gbps / 100 W</text>
+  <text x="872" y="270" font-size="8" fill="#b45309">     tb5 / Thunderbolt 5 / 120 Gbps / 140 W</text>
+  <text x="872" y="284" font-size="8" fill="#b45309">     wifi_7 / Wi-Fi 7 / 802.11be</text>
+  <text x="872" y="298" font-size="8" fill="#b45309">     bt_5_3 / Bluetooth 5.3</text>
+  <text x="985" y="326" text-anchor="middle" font-size="8" fill="#64748b">7 cols</text>
+
+  <!-- FK arrows down to laptops -->
+  <line x1="115" y1="270" x2="115" y2="490" stroke="#2563eb" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arrBlue)"/>
+  <line x1="325" y1="242" x2="325" y2="490" stroke="#059669" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arrGreen)"/>
+  <line x1="535" y1="256" x2="535" y2="490" stroke="#9333ea" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arrPurple)"/>
+  <line x1="745" y1="256" x2="745" y2="490" stroke="#db2777" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arrPink)"/>
+
+  <text x="122" y="390" font-size="8" fill="#2563eb">cpu_id</text>
+  <text x="332" y="375" font-size="8" fill="#059669">gpu_id</text>
+  <text x="542" y="385" font-size="8" fill="#9333ea">ram_id</text>
+  <text x="707" y="385" font-size="8" fill="#db2777">storage_id</text>
+
+  <!-- ── LAPTOPS (central fact table) ─────────────────────────────────────── -->
+  <rect x="20" y="490" width="1180" height="356" rx="10" fill="#f1f5f9" stroke="#334155" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="20" y="490" width="1180" height="42" rx="10" fill="#334155"/>
+  <rect x="20" y="518" width="1180" height="14" fill="#334155"/>
+  <text x="610" y="512" text-anchor="middle" font-size="14" font-weight="700" fill="white">laptops</text>
+  <text x="610" y="528" text-anchor="middle" font-size="10" fill="#94a3b8">28 rows · 55 columns · central fact table</text>
+  <line x1="20" y1="534" x2="1200" y2="534" stroke="#475569" stroke-width="0.8"/>
+
+  <!-- col 1: Identity + FKs -->
+  <text x="62"  y="550" font-size="9" font-weight="700" fill="#334155">Identity</text>
+  <text x="38"  y="565" font-size="8" font-weight="600" fill="#0f172a">PK id</text>
+  <text x="38"  y="579" font-size="8" fill="#475569">name · brand · model_line</text>
+  <text x="38"  y="593" font-size="8" fill="#475569">category · subcategory</text>
+  <text x="38"  y="607" font-size="8" fill="#475569">release_year / month</text>
+  <text x="38"  y="621" font-size="8" fill="#475569">price_chf · os</text>
+  <text x="62"  y="641" font-size="9" font-weight="700" fill="#334155">Foreign Keys</text>
+  <text x="38"  y="656" font-size="8" fill="#2563eb">FK cpu_id</text>
+  <text x="38"  y="670" font-size="8" fill="#059669">FK gpu_id</text>
+  <text x="38"  y="684" font-size="8" fill="#059669">   gpu_tgp_w *</text>
+  <text x="38"  y="698" font-size="8" fill="#9333ea">FK ram_id</text>
+  <text x="38"  y="712" font-size="8" fill="#db2777">FK storage_id</text>
+  <text x="38"  y="734" font-size="7" fill="#94a3b8">* per-laptop TGP config</text>
+  <text x="38"  y="746" font-size="7" fill="#94a3b8">  (not in gpu_specs)</text>
+
+  <line x1="248" y1="538" x2="248" y2="842" stroke="#cbd5e1" stroke-width="0.8"/>
+
+  <!-- col 2: Display (inlined) -->
+  <text x="296" y="550" font-size="9" font-weight="700" fill="#334155">Display (inlined)</text>
+  <text x="260" y="563" font-size="8" fill="#94a3b8" font-style="italic">no FK -- unique per unit</text>
+  <text x="260" y="577" font-size="8" fill="#475569">disp_inches</text>
+  <text x="260" y="591" font-size="8" fill="#475569">disp_width_px / height_px</text>
+  <text x="260" y="605" font-size="8" fill="#475569">disp_refresh_hz</text>
+  <text x="260" y="619" font-size="8" fill="#475569">disp_panel_type</text>
+  <text x="260" y="631" font-size="8" fill="#94a3b8">  IPS · OLED · Mini-LED IPS</text>
+  <text x="260" y="643" font-size="8" fill="#94a3b8">  Liquid Retina XDR Mini-LED</text>
+  <text x="260" y="657" font-size="8" fill="#475569">disp_nits / peak_nits</text>
+  <text x="260" y="671" font-size="8" fill="#475569">disp_color_srgb_pct / p3_pct</text>
+  <text x="260" y="685" font-size="8" fill="#475569">disp_hdr · disp_vsr</text>
+  <text x="260" y="699" font-size="8" fill="#475569">disp_aspect_ratio</text>
+  <text x="260" y="713" font-size="8" fill="#475569">disp_touch · disp_glossy</text>
+  <text x="296" y="733" font-size="7" fill="#94a3b8">14 cols total</text>
+
+  <line x1="476" y1="538" x2="476" y2="842" stroke="#cbd5e1" stroke-width="0.8"/>
+
+  <!-- col 3: Power + Physical -->
+  <text x="522" y="550" font-size="9" font-weight="700" fill="#334155">Power &amp; Physical</text>
+  <text x="490" y="565" font-size="8" fill="#475569">battery_wh</text>
+  <text x="490" y="579" font-size="8" fill="#475569">battery_life_hours</text>
+  <text x="490" y="593" font-size="8" fill="#475569">charger_watts</text>
+  <text x="490" y="607" font-size="8" fill="#475569">supports_usbc_charging</text>
+  <text x="490" y="621" font-size="8" fill="#475569">weight_kg · thickness_mm</text>
+  <text x="522" y="641" font-size="9" font-weight="700" fill="#334155">Build &amp; Input</text>
+  <text x="490" y="656" font-size="8" fill="#475569">build_material</text>
+  <text x="490" y="670" font-size="8" fill="#475569">keyboard_backlit · type</text>
+  <text x="490" y="684" font-size="8" fill="#475569">has_numpad</text>
+  <text x="522" y="704" font-size="9" font-weight="700" fill="#334155">Security &amp; Cam</text>
+  <text x="490" y="719" font-size="8" fill="#475569">fingerprint_reader</text>
+  <text x="490" y="733" font-size="8" fill="#475569">face_recognition · has_ir_camera</text>
+  <text x="490" y="747" font-size="8" fill="#475569">webcam_resolution</text>
+  <text x="522" y="767" font-size="9" font-weight="700" fill="#334155">Audio</text>
+  <text x="490" y="782" font-size="8" fill="#475569">speaker_count · has_dolby_atmos</text>
+
+  <line x1="720" y1="538" x2="720" y2="842" stroke="#cbd5e1" stroke-width="0.8"/>
+
+  <!-- col 4: AI + Gaming + Scores -->
+  <text x="764" y="550" font-size="9" font-weight="700" fill="#334155">AI &amp; Gaming</text>
+  <text x="732" y="565" font-size="8" fill="#475569">npu_tops</text>
+  <text x="732" y="577" font-size="8" fill="#94a3b8">  (>=40 = Copilot+ PC)</text>
+  <text x="732" y="591" font-size="8" fill="#475569">gaming_capable</text>
+  <text x="732" y="605" font-size="8" fill="#475569">gaming_tier</text>
+  <text x="732" y="617" font-size="8" fill="#94a3b8">  none/light/medium/heavy/enthusiast</text>
+  <text x="764" y="637" font-size="9" font-weight="700" fill="#334155">Classification</text>
+  <text x="732" y="652" font-size="8" fill="#475569">good_for (comma-sep tags)</text>
+  <text x="732" y="666" font-size="8" fill="#475569">warranty_years</text>
+  <text x="764" y="686" font-size="9" font-weight="700" fill="#334155">Scores (1-10)</text>
+  <text x="732" y="701" font-size="8" fill="#475569">value_score</text>
+  <text x="732" y="715" font-size="8" fill="#475569">performance_score</text>
+  <text x="732" y="729" font-size="8" fill="#475569">portability_score</text>
+  <text x="732" y="743" font-size="8" fill="#475569">build_quality_score</text>
+  <text x="732" y="757" font-size="8" fill="#475569">display_score</text>
+  <text x="764" y="777" font-size="9" font-weight="700" fill="#334155">Price Ranges</text>
+  <text x="732" y="792" font-size="8" fill="#64748b">MacBook:  CHF 1299-3999</text>
+  <text x="732" y="806" font-size="8" fill="#64748b">Everyday: CHF  599-1999</text>
+  <text x="732" y="820" font-size="8" fill="#64748b">Gaming:   CHF  849-4299</text>
+
+  <!-- ── BOTTOM JUNCTION TABLES ───────────────────────────────────────────── -->
+
+  <!-- laptop_connectivity junction -->
+  <rect x="20" y="872" width="540" height="100" rx="8" fill="#fef9c3" stroke="#d97706" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="20" y="872" width="540" height="36" rx="8" fill="#d97706"/>
+  <rect x="20" y="896"  width="540" height="12" fill="#d97706"/>
+  <text x="290" y="891" text-anchor="middle" font-size="12" font-weight="700" fill="white">laptop_connectivity</text>
+  <text x="290" y="907" text-anchor="middle" font-size="10" fill="#fde68a">205 rows  junction table</text>
+  <line x1="20" y1="910" x2="560" y2="910" stroke="#fcd34d" stroke-width="0.8"/>
+  <text x="36"  y="926" font-size="9" fill="#78350f">FK laptop_id  ·  FK standard_id  ·  count INTEGER</text>
+  <text x="36"  y="942" font-size="8" fill="#92400e">e.g.  laptop_004 / tb5 / 3  -- MacBook Pro 14 M4 Pro has 3x Thunderbolt 5</text>
+  <text x="36"  y="956" font-size="8" fill="#92400e">      laptop_026 / tb5 / 2  -- Razer Blade 16 has 2x Thunderbolt 5 + 1x Thunderbolt 4</text>
+
+  <!-- laptop_use_cases junction -->
+  <rect x="590" y="872" width="440" height="100" rx="8" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="590" y="872" width="440" height="36" rx="8" fill="#4f46e5"/>
+  <rect x="590" y="896"  width="440" height="12" fill="#4f46e5"/>
+  <text x="810" y="891" text-anchor="middle" font-size="12" font-weight="700" fill="white">laptop_use_cases</text>
+  <text x="810" y="907" text-anchor="middle" font-size="10" fill="#c7d2fe">198 rows  junction table</text>
+  <line x1="590" y1="910" x2="1030" y2="910" stroke="#a5b4fc" stroke-width="0.8"/>
+  <text x="606" y="926" font-size="9" fill="#3730a3">FK laptop_id  ·  use_case TEXT</text>
+  <text x="606" y="942" font-size="8" fill="#4338ca">gaming · heavy_gaming · coding · video_editing</text>
+  <text x="606" y="956" font-size="8" fill="#4338ca">university · office · portability · machine_learning ...</text>
+
+  <!-- arrows: laptops -> junction tables -->
+  <line x1="290" y1="846" x2="290" y2="872" stroke="#d97706" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="700" y1="846" x2="700" y2="872" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- arrow: connectivity_standards -> laptop_connectivity -->
+  <!-- from right edge of connectivity_standards box, down and left to laptop_connectivity -->
+  <path d="M 985 342 L 985 380 L 290 380 L 290 430" stroke="#d97706" stroke-width="1.2" stroke-dasharray="5,3" fill="none" marker-end="url(#arr)"/>
+  <text x="630" y="375" font-size="8" fill="#d97706">standard_id FK</text>
+
+  <!-- Indexes panel -->
+  <rect x="1050" y="872" width="330" height="100" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="1215" y="890" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Indexes (13 total)</text>
+  <text x="1064" y="906" font-size="8" fill="#64748b">laptops: category, price_chf, weight_kg,</text>
+  <text x="1064" y="920" font-size="8" fill="#64748b">  battery_life_hours, gaming_tier, npu_tops,</text>
+  <text x="1064" y="934" font-size="8" fill="#64748b">  cpu_id, gpu_id</text>
+  <text x="1064" y="948" font-size="8" fill="#64748b">connectivity_standards: standard_type</text>
+  <text x="1064" y="962" font-size="8" fill="#64748b">laptop_connectivity: standard_id</text>
+  <text x="1064" y="976" font-size="8" fill="#64748b">cpu_specs: brand  |  gpu_specs: type  |  use_cases: use_case</text>
+
+  <!-- Legend -->
+  <rect x="1050" y="770" width="330" height="96" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="1215" y="788" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Legend</text>
+  <rect x="1062" y="796" width="10" height="10" rx="2" fill="#dbeafe" stroke="#2563eb" stroke-width="1"/>
+  <text x="1078" y="806" font-size="8" fill="#334155">cpu_specs</text>
+  <rect x="1140" y="796" width="10" height="10" rx="2" fill="#d1fae5" stroke="#059669" stroke-width="1"/>
+  <text x="1156" y="806" font-size="8" fill="#334155">gpu_specs</text>
+  <rect x="1220" y="796" width="10" height="10" rx="2" fill="#f3e8ff" stroke="#9333ea" stroke-width="1"/>
+  <text x="1236" y="806" font-size="8" fill="#334155">ram_specs</text>
+  <rect x="1300" y="796" width="10" height="10" rx="2" fill="#fce7f3" stroke="#db2777" stroke-width="1"/>
+  <text x="1316" y="806" font-size="8" fill="#334155">storage_specs</text>
+  <rect x="1062" y="814" width="10" height="10" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+  <text x="1078" y="824" font-size="8" fill="#334155">connectivity_standards</text>
+  <rect x="1062" y="832" width="10" height="10" rx="2" fill="#f1f5f9" stroke="#334155" stroke-width="1.5"/>
+  <text x="1078" y="842" font-size="8" fill="#334155">laptops (fact table)</text>
+  <rect x="1062" y="850" width="10" height="10" rx="2" fill="#fef9c3" stroke="#d97706" stroke-width="1"/>
+  <text x="1078" y="860" font-size="8" fill="#334155">laptop_connectivity</text>
+  <rect x="1180" y="850" width="10" height="10" rx="2" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1"/>
+  <text x="1196" y="860" font-size="8" fill="#334155">laptop_use_cases</text>
+
+</svg>

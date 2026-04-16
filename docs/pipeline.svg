@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="900" height="920" viewBox="0 0 900 920" xmlns="http://www.w3.org/2000/svg"
+     font-family="'Inter','Segoe UI',system-ui,sans-serif">
+
+  <defs>
+    <marker id="arr"      markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#64748b"/>
+    </marker>
+    <marker id="arrGreen" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#059669"/>
+    </marker>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#00000015"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="920" fill="#f8fafc"/>
+
+  <!-- Title -->
+  <text x="450" y="36" text-anchor="middle" font-size="17" font-weight="700"
+        fill="#0f172a" letter-spacing="-0.2">Buy-Bot — Pipeline &amp; Database Flow</text>
+
+  <!-- ══════════════════════════════════════
+       STAGE 1 — RASA NLU   y 56-148
+  ══════════════════════════════════════ -->
+  <!-- badge -->
+  <rect x="44" y="62" width="22" height="22" rx="11" fill="#2563eb"/>
+  <text x="55" y="78" text-anchor="middle" font-size="11" font-weight="700" fill="white">1</text>
+
+  <rect x="76" y="56" width="520" height="92" rx="8"
+        fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="336" y="79"  text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">Rasa NLU — Intake</text>
+  <text x="336" y="97"  text-anchor="middle" font-size="11" fill="#1d4ed8">Slot-filling forms collect 4 values from the user</text>
+  <!-- slot chips -->
+  <rect x="90"  y="107" width="72" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="126" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">budget</text>
+  <rect x="172" y="107" width="98" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="221" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">preferred_os</text>
+  <rect x="280" y="107" width="82" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="321" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">use_case</text>
+  <rect x="372" y="107" width="76" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="410" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">mobility</text>
+  <text x="468" y="122" font-size="10" fill="#3b82f6">(float · string · string · string)</text>
+
+  <!-- data label bubble right -->
+  <rect x="618" y="68" width="254" height="68" rx="6"
+        fill="white" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="632" y="86"  font-size="10" font-weight="600" fill="#475569">Handoff payload</text>
+  <text x="632" y="102" font-size="9"  fill="#64748b" font-family="monospace">{</text>
+  <text x="644" y="116" font-size="9"  fill="#64748b" font-family="monospace">budget: 900.0,</text>
+  <text x="644" y="128" font-size="9"  fill="#64748b" font-family="monospace">preferred_os: "windows",</text>
+  <!-- second line -->
+  <!-- arrow from stage to bubble -->
+  <line x1="596" y1="102" x2="618" y2="102" stroke="#94a3b8" stroke-width="1" marker-end="url(#arr)"/>
+
+  <!-- connector down -->
+  <line x1="336" y1="148" x2="336" y2="176" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="350" y="167" font-size="9" fill="#64748b">payload</text>
+
+  <!-- ══════════════════════════════════════
+       STAGE 2 — ROUTER LLM   y 176-240
+  ══════════════════════════════════════ -->
+  <rect x="44" y="182" width="22" height="22" rx="11" fill="#4f46e5"/>
+  <text x="55" y="198" text-anchor="middle" font-size="11" font-weight="700" fill="white">2</text>
+
+  <rect x="76" y="176" width="520" height="64" rx="8"
+        fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="336" y="200" text-anchor="middle" font-size="13" font-weight="600" fill="#3730a3">Router LLM</text>
+  <text x="336" y="219" text-anchor="middle" font-size="11" fill="#4338ca">Maps use_case → expert agent · handles ambiguous input</text>
+
+  <!-- data label -->
+  <rect x="618" y="183" width="254" height="44" rx="6"
+        fill="white" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="632" y="200" font-size="10" font-weight="600" fill="#475569">Routes to</text>
+  <text x="632" y="217" font-size="9"  fill="#64748b" font-family="monospace">agent_type: "gaming"</text>
+  <line x1="596" y1="207" x2="618" y2="207" stroke="#94a3b8" stroke-width="1" marker-end="url(#arr)"/>
+
+  <!-- connector down -->
+  <line x1="336" y1="240" x2="336" y2="268" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="350" y="259" font-size="9" fill="#64748b">agent_type</text>
+
+  <!-- ══════════════════════════════════════
+       STAGE 3 — EXPERT AGENT   y 268-408
+  ══════════════════════════════════════ -->
+  <rect x="44" y="274" width="22" height="22" rx="11" fill="#9333ea"/>
+  <text x="55" y="290" text-anchor="middle" font-size="11" font-weight="700" fill="white">3</text>
+
+  <rect x="76" y="268" width="520" height="140" rx="8"
+        fill="#f3e8ff" stroke="#9333ea" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="336" y="291" text-anchor="middle" font-size="13" font-weight="600" fill="#581c87">Expert Agent  (domain follow-up)</text>
+
+  <!-- 4 domain rows -->
+  <!-- Uni row -->
+  <rect x="90"  y="300" width="58" height="20" rx="4" fill="#ede9fe" stroke="#8b5cf6" stroke-width="0.8"/>
+  <text x="119" y="314" text-anchor="middle" font-size="9" font-weight="600" fill="#4c1d95">Uni</text>
+  <text x="158" y="314" font-size="9" fill="#6d28d9">→ charger time? priority battery or screen? creative work?</text>
+
+  <!-- Gaming row -->
+  <rect x="90"  y="326" width="58" height="20" rx="4" fill="#ede9fe" stroke="#8b5cf6" stroke-width="0.8"/>
+  <text x="119" y="340" text-anchor="middle" font-size="9" font-weight="600" fill="#4c1d95">Gaming</text>
+  <text x="158" y="340" font-size="9" fill="#6d28d9">→ which games (esports / AAA)? carry daily? GPU vs weight?</text>
+
+  <!-- Professional row -->
+  <rect x="90"  y="352" width="58" height="20" rx="4" fill="#ede9fe" stroke="#8b5cf6" stroke-width="0.8"/>
+  <text x="119" y="366" text-anchor="middle" font-size="9" font-weight="600" fill="#4c1d95">Professional</text>
+  <text x="158" y="366" font-size="9" fill="#6d28d9">→ software (Premiere/Blender/PyTorch)? 4K export? macOS or Win?</text>
+
+  <!-- Office row -->
+  <rect x="90"  y="378" width="58" height="20" rx="4" fill="#ede9fe" stroke="#8b5cf6" stroke-width="0.8"/>
+  <text x="119" y="392" text-anchor="middle" font-size="9" font-weight="600" fill="#4c1d95">Office</text>
+  <text x="158" y="392" font-size="9" fill="#6d28d9">→ desk or travel? video calls? security requirements?</text>
+
+  <!-- data label -->
+  <rect x="618" y="268" width="254" height="140" rx="6"
+        fill="white" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="632" y="286" font-size="10" font-weight="600" fill="#475569">Enriched user_profile</text>
+  <text x="632" y="302" font-size="9"  fill="#64748b" font-family="monospace">{</text>
+  <text x="644" y="316" font-size="9"  fill="#64748b" font-family="monospace">budget: 900.0,</text>
+  <text x="644" y="330" font-size="9"  fill="#64748b" font-family="monospace">use_case: "gaming",</text>
+  <text x="644" y="344" font-size="9"  fill="#64748b" font-family="monospace">games: ["CS2","LoL"],</text>
+  <text x="644" y="358" font-size="9"  fill="#64748b" font-family="monospace">carry_daily: true,</text>
+  <text x="644" y="372" font-size="9"  fill="#64748b" font-family="monospace">gpu_priority: "medium",</text>
+  <text x="644" y="386" font-size="9"  fill="#64748b" font-family="monospace">preferred_os: "windows"</text>
+  <text x="632" y="400" font-size="9"  fill="#64748b" font-family="monospace">}</text>
+  <line x1="596" y1="338" x2="618" y2="338" stroke="#94a3b8" stroke-width="1" marker-end="url(#arr)"/>
+
+  <!-- connector down -->
+  <line x1="336" y1="408" x2="336" y2="436" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="350" y="427" font-size="9" fill="#64748b">user_profile</text>
+
+  <!-- ══════════════════════════════════════
+       STAGE 4 — SEARCH AGENT + DB   y 436-536
+  ══════════════════════════════════════ -->
+  <rect x="44" y="442" width="22" height="22" rx="11" fill="#059669"/>
+  <text x="55" y="458" text-anchor="middle" font-size="11" font-weight="700" fill="white">4</text>
+
+  <rect x="76" y="436" width="350" height="100" rx="8"
+        fill="#d1fae5" stroke="#059669" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="251" y="459" text-anchor="middle" font-size="13" font-weight="600" fill="#064e3b">Search Agent</text>
+  <text x="251" y="477" text-anchor="middle" font-size="11" fill="#065f46">Filters laptops.db by:</text>
+  <text x="251" y="493" text-anchor="middle" font-size="10" fill="#059669">price  ±20% · use_case tag · gaming_tier</text>
+  <text x="251" y="508" text-anchor="middle" font-size="10" fill="#059669">weight_kg (if mobility=high) · preferred_os</text>
+  <text x="251" y="522" text-anchor="middle" font-size="10" fill="#059669">Scores remaining candidates → top 2</text>
+
+  <!-- dashed arrow to DB -->
+  <line x1="426" y1="486" x2="466" y2="486" stroke="#059669" stroke-width="1.5"
+        stroke-dasharray="4,3" marker-end="url(#arrGreen)"/>
+
+  <!-- DATABASE -->
+  <rect x="466" y="436" width="366" height="240" rx="8"
+        fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="649" y="460" text-anchor="middle" font-size="13" font-weight="700" fill="#14532d">laptops.db</text>
+
+  <!-- Table header -->
+  <rect x="480" y="468" width="338" height="20" rx="3" fill="#bbf7d0"/>
+  <text x="538" y="482" font-size="9" font-weight="600" fill="#14532d">id</text>
+  <text x="570" y="482" font-size="9" font-weight="600" fill="#14532d">name · brand</text>
+  <text x="672" y="482" font-size="9" font-weight="600" fill="#14532d">price_chf</text>
+  <text x="730" y="482" font-size="9" font-weight="600" fill="#14532d">category</text>
+  <text x="786" y="482" font-size="9" font-weight="600" fill="#14532d">gaming_tier</text>
+
+  <!-- example rows -->
+  <rect x="480" y="490" width="338" height="16" rx="0" fill="#dcfce7"/>
+  <text x="490" y="502" font-size="8" fill="#166534" font-family="monospace">laptop_019  Lenovo IdeaPad Gaming 3   849   gaming    medium</text>
+  <text x="490" y="518" font-size="8" fill="#166534" font-family="monospace">laptop_020  Acer Nitro 16              999   gaming    heavy</text>
+  <text x="490" y="534" font-size="8" fill="#166534" font-family="monospace">laptop_022  Asus TUF Gaming A16       1149   gaming    heavy</text>
+  <text x="490" y="550" font-size="8" fill="#94a3b8" font-family="monospace">...  25 more rows filtered out</text>
+
+  <!-- column groups -->
+  <line x1="480" y1="560" x2="818" y2="560" stroke="#86efac" stroke-width="0.8"/>
+  <text x="489" y="573" font-size="9" font-weight="600" fill="#15803d">Key filter columns</text>
+  <text x="489" y="587" font-size="9" fill="#166534">price_chf · gaming_tier · weight_kg</text>
+  <text x="489" y="601" font-size="9" fill="#166534">battery_life_hours · ram_gb · gpu_tgp_w</text>
+  <text x="489" y="615" font-size="9" fill="#166534">display_panel_type · npu_tops</text>
+  <text x="489" y="633" font-size="9" font-weight="600" fill="#15803d">Use-case join</text>
+  <text x="489" y="647" font-size="9" fill="#166534">laptop_use_cases  (198 rows)</text>
+  <text x="489" y="661" font-size="9" fill="#166534">gaming · esports · study · portability …</text>
+
+  <!-- data label right of search (result) -->
+  <rect x="618" y="436" width="0" height="0"/><!-- placeholder, result shown below -->
+
+  <!-- connector down from Search -->
+  <line x1="251" y1="536" x2="251" y2="564" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="265" y="555" font-size="9" fill="#64748b">2 candidates</text>
+
+  <!-- ══════════════════════════════════════
+       STAGE 5 — SUGGESTION AGENT   y 564-650
+  ══════════════════════════════════════ -->
+  <rect x="44" y="570" width="22" height="22" rx="11" fill="#0d9488"/>
+  <text x="55" y="586" text-anchor="middle" font-size="11" font-weight="700" fill="white">5</text>
+
+  <rect x="76" y="564" width="350" height="100" rx="8"
+        fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="251" y="587" text-anchor="middle" font-size="13" font-weight="600" fill="#134e4a">Suggestion Agent</text>
+  <text x="251" y="605" text-anchor="middle" font-size="11" fill="#0f766e">Generates recommendation text</text>
+  <text x="251" y="621" text-anchor="middle" font-size="10" fill="#0d9488">Reads user_profile → calibrates jargon level</text>
+  <text x="251" y="637" text-anchor="middle" font-size="10" fill="#0d9488">Tech user → specs · Casual user → lifestyle</text>
+  <text x="251" y="651" text-anchor="middle" font-size="10" fill="#0d9488">Explains trade-off of primary vs alternative</text>
+
+  <!-- data label -->
+  <rect x="466" y="680" width="366" height="80" rx="6"
+        fill="white" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="480" y="697" font-size="10" font-weight="600" fill="#475569">Output passed to Suggestion Agent</text>
+  <text x="480" y="713" font-size="9"  fill="#64748b" font-family="monospace">primary:     { Acer Nitro 16, CHF 999, RTX 4060 }</text>
+  <text x="480" y="727" font-size="9"  fill="#64748b" font-family="monospace">alternative: { Lenovo IdeaPad G3, CHF 849, RTX 4050 }</text>
+  <text x="480" y="741" font-size="9"  fill="#64748b" font-family="monospace">user_profile: { ... full dict ... }</text>
+  <line x1="818" y1="664" x2="818" y2="680" stroke="#94a3b8" stroke-width="1" marker-end="url(#arr)"/>
+
+  <!-- connector down -->
+  <line x1="251" y1="664" x2="251" y2="692" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ══════════════════════════════════════
+       OUTPUT   y 692-748
+  ══════════════════════════════════════ -->
+  <rect x="76" y="692" width="350" height="56" rx="8"
+        fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="251" y="714" text-anchor="middle" font-size="13" font-weight="600" fill="#0c4a6e">Recommendation</text>
+  <text x="251" y="730" text-anchor="middle" font-size="10" fill="#0369a1">Primary · Alternative · Plain-language explanation</text>
+  <text x="251" y="744" text-anchor="middle" font-size="10" fill="#0369a1">Closing prompt: compare? cheaper option?</text>
+
+  <!-- QA intercept note at bottom -->
+  <rect x="76" y="772" width="790" height="38" rx="6"
+        fill="#fdf2f8" stroke="#db2777" stroke-width="1" stroke-dasharray="5,3"/>
+  <text x="471" y="787" text-anchor="middle" font-size="10" font-weight="600" fill="#831843">QA Agent (always-on)</text>
+  <text x="471" y="803" text-anchor="middle" font-size="10" fill="#9d174d">Intercepts at any stage to answer off-script questions → resumes pipeline after replying</text>
+
+</svg>
