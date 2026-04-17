@@ -60,13 +60,33 @@ Simple log of completed work on Buy-Bot project.
 - ✅ Updated training data examples for budget extraction
 - ✅ Updated architecture roadmap (Phase 6: Streamlit + Telegram only)
 
+### Rasa + LangGraph Structure
+- ✅ Updated requirements.txt with Rasa 3.6.21 + rasa-sdk 3.6.2
+- ✅ Documented Rasa project structure:
+  - `rasa_bot/domain.yml` – Intents, entities, slots, responses
+  - `rasa_bot/config.yml` – NLU pipeline configuration
+  - `rasa_bot/data/nlu.yml` – Training examples (EN + DE)
+  - `rasa_bot/data/stories.yml` – Dialogue flows
+  - `rasa_bot/data/rules.yml` – Conversation rules
+  - `rasa_bot/actions/actions.py` – Custom Python actions
+- ✅ Documented LangGraph agent files:
+  - `langgraph_agents/graph.py` – Main orchestration
+  - `langgraph_agents/agents/router.py` – Question classifier
+  - `langgraph_agents/agents/product_expert.py` – Product Q&A
+  - `langgraph_agents/agents/comparator.py` – Comparison
+  - `langgraph_agents/agents/advisor.py` – General advice
+  - `langgraph_agents/agents/rag_agent.py` – Policy Q&A (RAG)
+- ✅ Documented data files:
+  - `data/laptops.json` – 12 laptop options
+  - `data/policies.md` – Store policies
+
 ### File Cleanup & Organization
 - ✅ Removed all redundancy from README.md, ARCHITECTURE.md, LLM.md
-- ✅ README.md: Personas, example dialogs, problem/solution (human-friendly)
-- ✅ ARCHITECTURE.md: Pure technical design (Rasa, agents, database schema)
-- ✅ LLM.md: Navigation guide for AI assistants (links to other files)
-- ✅ Each file is now specialized with no duplication
-- ✅ Cross-file references to prevent copy-paste content
+- ✅ README.md: Personas, example dialogs, problem/solution + links to structure
+- ✅ ARCHITECTURE.md: Pure technical design with file references
+- ✅ SETUP.md: Installation, Rasa training, action server startup
+- ✅ LLM.md: Complete file guide with all Rasa and LangGraph agents
+- ✅ Cross-file references prevent duplication
 
 ## 2026-04-15
 
@@ -117,14 +137,95 @@ Simple log of completed work on Buy-Bot project.
 ### Diagrams Updated
 - `docs/database.svg` — redrawn to show all 7 tables with FK relationship arrows, column listings color-coded by table, index summary, legend
 
+## 2026-04-17
+
+### Architecture Pivot — Rasa dropped, full LangGraph pipeline built
+
+Dropped Rasa NLU entirely. Rasa requires a separate training/server process and does not handle open-ended conversation well. Replaced with an LLM-based intake agent that extracts slots from free-form conversation and returns structured JSON. Simpler, no training step, handles edge cases ("I want apple", "800 to 1000 CHF") out of the box.
+
+### Created Files
+
+- `agents/__init__.py` — package marker
+- `agents/state.py` — `BuyBotState` (Pydantic BaseModel); all fields typed and validated; budget coerces strings to float; messages use `Annotated[list, operator.add]` for LangGraph append semantics
+- `agents/prompts.py` — all LLM prompts in one file: `BUYBOT_SYSTEM_PROMPT` (global persona, language rules, no-emoji rule) + 6 role prompts (intake, router, uni, gaming, professional, office, search, suggestion, QA)
+- `agents/intake_agent.py` — `IntakeAgent`; collects 4 slots via natural conversation; manual JSON parsing (no `with_structured_output`) because free OpenRouter models don't support tool calling
+- `agents/router.py` — `Router`; no LLM call, reads `use_case` from state and returns next node name; `ROUTES` dict maps use_case → agent node name
+- `agents/expert_agents.py` — `BaseExpertAgent` + 4 subclasses (`UniAgent`, `GamingAgent`, `ProfessionalAgent`, `OfficeAgent`); shared logic in base class, only role prompt differs per agent; merges LLM-returned `user_profile_update` into state on each turn
+- `agents/search_agent.py` — `SearchAgent`; two-step approach: SQL filters hard constraints (budget ±20%, OS, use-case tags via junction table, weight < 2 kg for high mobility), then LLM ranks candidates and picks primary + alternative; USE_CASE_TAGS and OS_FILTER mappings centralised at top of file
+- `agents/suggestion_agent.py` — `SuggestionAgent`; plain-text LLM output (no JSON); connects specs to user's actual needs; handles no-results edge case with actionable suggestions
+- `main.py` — sequential pipeline runner for CLI testing; `run_intake()` and `run_expert()` loops; prints stage headers and slot summaries between stages; not the LangGraph graph wiring (that is `graph.py`, not yet built)
+- `CLAUDE.md` — project instructions for Claude Code: architecture, build order, coding standards, env setup
+- `vaagi_thought.md` — design rationale document
+
+### Key Design Decisions
+
+- **BuyBotState as Pydantic BaseModel** instead of TypedDict — runtime validation catches bad values immediately
+- **Manual JSON parsing** in all agents — more portable across free-tier OpenRouter models that lack tool-calling
+- **Two-step search** (SQL + LLM ranking) — SQL handles exact constraints reliably; LLM handles nuanced trade-offs
+- **Single `BUYBOT_SYSTEM_PROMPT`** for all agents — change personality once, applies everywhere
+
+### Bugs Fixed
+
+- Language detection in `SuggestionAgent`: LLM was defaulting to German (Swiss university context) because `state.messages` was not passed to the invoke call. Fixed by passing `[system_message, *state.messages, final_instruction]` so the LLM sees the full English conversation.
+- Emojis in bot output: added `- Never use emojis` to `BUYBOT_SYSTEM_PROMPT`; rule now applies to all agents from one place.
+
+---
+
+## 2026-04-17 (continued)
+
+### Pipeline improvements
+
+- **Language selection**: added `language` as a first intake slot. Bot now opens with a bilingual question ("English or German? / Englisch oder Deutsch?") and all downstream agents receive the chosen language explicitly in their system prompt. Added `language` field to `BuyBotState`, `IntakeResponse`, slot tracking, `is_complete`, and JSON format.
+- **UniAgent questions**: rewrote `UNI_AGENT_ROLE` to ask about field of study first (determines hardware needs more than anything else), then let the conversation flow naturally based on what the user reveals. Removed rigid numbered list — agent now uses judgment to skip questions whose answers are already obvious.
+- **Language bug fix**: `SuggestionAgent` was defaulting to German because it didn't pass `state.messages` to the LLM. Fixed by invoking with `[system_message, *state.messages, final_instruction]`.
+- **Emoji fix**: added `- Never use emojis` to `BUYBOT_SYSTEM_PROMPT` — applies to all agents from one place.
+- **Off-topic and NSFW guardrail**: added global rule to `BUYBOT_SYSTEM_PROMPT` restricting Buy-Bot to laptop purchasing only.
+
+### Created Files
+
+- `agents/qa_agent.py` — `QAAgent`; three responsibilities: `classify_message()` (three-way: `on_script` / `qa` / `off_topic`), `run()` (answers laptop-related off-script questions, plain text, does not change `current_stage`), `handle_off_topic()` (hardcoded refusal — NSFW/unrelated content is never forwarded to the LLM).
+- `agents/graph.py` — full LangGraph `StateGraph` wiring; `build_graph(llm)` returns a compiled graph with `MemorySaver` checkpointer; dispatch conditional edge from START classifies every incoming message and routes to the correct agent; intake and expert agents chain automatically when their stage completes (same turn); search → suggestion always sequential; QA and off-topic intercept without changing `current_stage` so the pipeline resumes correctly.
+
+### Key Design Decisions
+
+- **Three-way message classifier** (`ON_SCRIPT` / `QA` / `OFF_TOPIC`) — separate routing for laptop questions vs completely unrelated content; off-topic never reaches the LLM for a response
+- **Hardcoded off-topic refusals** — one string per language, no LLM call; avoids feeding harmful content into the model
+- **`current_stage` never touched by QA/off-topic nodes** — graph routes back to the interrupted stage automatically on the next turn
+- **`main.py` updated to run through the graph** — now tests dispatch, conditional edges, QA interception, and off-topic rejection; previous version was a sequential runner that bypassed all graph logic
+
+---
+
+## 2026-04-17 (continued)
+
+### Created Files
+
+- `frontend/app.py` — Streamlit chat frontend; `@st.cache_resource` builds the graph once per server process; per-session state (session ID, message history, done flag) lives in `st.session_state`; spinner shown while the bot thinks; "New conversation" button in sidebar resets session; input disabled once pipeline is done. Run with `streamlit run frontend/app.py` from the project root.
+
+### Improvements
+
+- **QA classifier accuracy**: classifier was failing on short answers like "uni" because it only saw the user's message in isolation. Fixed by passing the bot's last question alongside the user's reply (`"Bot: ...\nUser: ..."`) and adding concrete examples to the prompt covering exactly these cases.
+- **Two-model architecture (structure ready)**: `build_graph()` now accepts `llm_fast` and `llm_strong` separately. Fast model → intake, expert agents, classifier. Strong model → QA answers, search ranking, suggestion. Both currently point to the same model — swap `llm_fast` to a smaller model in `main.py` and `frontend/app.py` (one line each, marked with `TODO`).
+- **`max_tokens` tuned per model**: `llm_fast` uses 500 tokens (slot extraction needs less), `llm_strong` uses 1000 (recommendation needs more).
+
+### Key Design Decisions
+
+- **Two models, not one** — quality where it matters (recommendation, QA), speed everywhere else
+- **Classifier gets conversation context** — bot question + user reply, not just the user reply alone; short answers are always ambiguous without knowing what was asked
+- **Graph-backed `main.py`** — CLI runner now goes through the real LangGraph graph, not a hand-rolled sequential loop; tests dispatch, QA interception, and off-topic rejection
+
+---
+
 ## Current Status
+
 🟢 **Infrastructure ready — API connections and LangSmith tracing verified**
 🟢 **Product database complete — 28 laptops, normalized 7-table SQLite schema**
 🟢 **Architecture documented — 6-stage pipeline with 4 expert agents**
 🟢 **Architecture diagrams complete — SVGs in docs/**
-🔵 **Next: Rasa NLU — intents, slot forms, handoff webhook**
-🔵 **Then: LangGraph pipeline — router + expert agents + search + suggestion + QA**
-🔵 **Then: Frontend — Streamlit + Telegram**
+🟢 **Full LangGraph pipeline complete — all agents wired, graph compiled**
+🟢 **Streamlit frontend live — `streamlit run frontend/app.py`**
+🟢 **End-to-end testable via CLI (`python main.py`) and browser**
+🔵 **Next: swap `llm_fast` to a smaller model for speed (one line in main.py + frontend/app.py)**
+🔵 **Then: LangSmith feedback logging at conversation end**
 
 ---
 
