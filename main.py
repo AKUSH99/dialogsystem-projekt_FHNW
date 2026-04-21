@@ -22,47 +22,14 @@ What this tests:
 
 import os
 
-from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
-from langchain_openai import ChatOpenAI
 
 from agents.graph import build_graph
+from agents.llm_builder import build_llms
 from agents.state import create_initial_state
 
 
-def build_llms() -> tuple[ChatOpenAI, ChatOpenAI]:
-    """
-    Returns (llm_fast, llm_strong) — two LLM clients for the pipeline.
-
-    llm_fast   → intake, expert agents, classifier  (swap to a smaller model for speed)
-    llm_strong → QA answers, search ranking, suggestion  (keep the best model here)
-
-    To switch models tomorrow, change the model string in one place each.
-    """
-    common = dict(
-        api_key=os.getenv("OPENROUTER_API_KEY"),
-        base_url="https://openrouter.ai/api/v1",
-        temperature=0.7,
-    )
-
-    llm_fast = ChatOpenAI(
-        model="openai/gpt-oss-120b:free",  # TODO: swap to a smaller model e.g. meta-llama/llama-3.1-8b-instruct:free
-        max_tokens=500,
-        **common,
-    )
-
-    llm_strong = ChatOpenAI(
-        model="openai/gpt-oss-120b:free",  # keep the best model for QA + recommendation
-        max_tokens=1000,
-        **common,
-    )
-
-    return llm_fast, llm_strong
-
-
 def main():
-    load_dotenv()
-
     # Enable LangSmith tracing — every run appears in the dashboard
     os.environ["LANGSMITH_TRACING"] = "true"
     os.environ["LANGSMITH_PROJECT"] = "buy-bot"

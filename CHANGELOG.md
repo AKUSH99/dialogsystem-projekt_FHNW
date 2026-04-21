@@ -215,6 +215,31 @@ Dropped Rasa NLU entirely. Rasa requires a separate training/server process and 
 
 ---
 
+## 2026-04-21
+
+### Created Files
+
+- `model_config.py` — central model configuration; defines `MODEL_FAST`, `MODEL_STRONG`, `MODEL_FALLBACK` and their token limits and temperatures; both CLI and Streamlit import from here so swapping a model requires editing one file only
+- `agents/llm_builder.py` — `ModelWithFallback` class + `build_llms()` function; single source of truth for LLM construction shared by `main.py` and `frontend/app.py`
+
+### Features Implemented
+
+- **Model config file**: all model names, token limits, and temperatures moved out of `main.py` / `frontend/app.py` into `model_config.py`; separate temperature per model (`TEMPERATURE_FAST = 0.3`, `TEMPERATURE_STRONG = 0.7`, `TEMPERATURE_FALLBACK = 0.5`)
+- **Automatic fallback model**: `ModelWithFallback` wraps any primary LLM with a fallback; if the primary fails (rate limit, outage, timeout), the call is transparently retried on the fallback and a `[fallback]` line is printed to the terminal; explicit `try/except` rather than LangChain's `with_fallbacks()` so both primary and fallback errors are reported independently
+
+### Refactoring
+
+- `main.py` — removed inline `build_llms()` and all model-config imports; now imports `build_llms` from `agents.llm_builder`
+- `frontend/app.py` — removed inline LLM construction block from `get_graph()`; now calls `build_llms()` from `agents.llm_builder`; removed `ChatOpenAI`, `load_dotenv`, and model-config imports
+
+### Key Design Decisions
+
+- **One file to change models** — `model_config.py` is the only file that needs editing when swapping models; neither runner file needs to be touched
+- **Explicit fallback over LangChain's `with_fallbacks()`** — `with_fallbacks()` re-raises the primary's error when the fallback also fails, masking whether the fallback was tried at all; `ModelWithFallback` reports each failure independently and always surfaces the fallback's error if it too fails
+- **Fallback from a different provider** — fallback model (`nvidia/nemotron-3-super-120b-a12b:free`) intentionally runs on a different provider than the primary models to survive provider-level outages
+
+---
+
 ## Current Status
 
 🟢 **Infrastructure ready — API connections and LangSmith tracing verified**
@@ -224,8 +249,9 @@ Dropped Rasa NLU entirely. Rasa requires a separate training/server process and 
 🟢 **Full LangGraph pipeline complete — all agents wired, graph compiled**
 🟢 **Streamlit frontend live — `streamlit run frontend/app.py`**
 🟢 **End-to-end testable via CLI (`python main.py`) and browser**
-🔵 **Next: swap `llm_fast` to a smaller model for speed (one line in main.py + frontend/app.py)**
-🔵 **Then: LangSmith feedback logging at conversation end**
+🟢 **Model config centralised — swap any model by editing `model_config.py` only**
+🟢 **Automatic fallback model — rate limits and outages handled transparently**
+🔵 **Next: LangSmith feedback logging at conversation end**
 
 ---
 

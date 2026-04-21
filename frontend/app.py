@@ -18,11 +18,10 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
-from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
-from langchain_openai import ChatOpenAI
 
 from agents.graph import build_graph
+from agents.llm_builder import build_llms
 from agents.state import create_initial_state
 
 # ---------------------------------------------------------------------------
@@ -51,27 +50,9 @@ def get_graph():
       llm_fast   → intake, expert agents, classifier
       llm_strong → QA answers, search ranking, suggestion
 
-    To switch models, change the model string below — one line each.
+    To switch models, edit model_config.py — no need to touch this file.
     """
-    load_dotenv()
-
-    common = dict(
-        api_key=os.getenv("OPENROUTER_API_KEY"),
-        base_url="https://openrouter.ai/api/v1",
-        temperature=0.7,
-    )
-
-    llm_fast = ChatOpenAI(
-        model="openai/gpt-oss-120b:free",  # TODO: swap to a smaller model e.g. meta-llama/llama-3.1-8b-instruct:free
-        max_tokens=500,
-        **common,
-    )
-
-    llm_strong = ChatOpenAI(
-        model="openai/gpt-oss-120b:free",  # keep the best model for QA + recommendation
-        max_tokens=1000,
-        **common,
-    )
+    llm_fast, llm_strong = build_llms()
 
     # Use absolute path for the database so the app works regardless of
     # which directory Streamlit is launched from.
