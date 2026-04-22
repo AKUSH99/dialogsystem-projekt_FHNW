@@ -14,26 +14,28 @@ Find available models (including free ones) at:
 # Fast model — used for slot extraction, expert follow-ups, and routing.
 # Speed matters more than depth here. A 7B–27B model is usually enough.
 # ---------------------------------------------------------------------------
-MODEL_FAST = "meta-llama/llama-3.2-3b-instruct:free"
+MODEL_FAST = "google/gemma-4-26b-a4b-it"
 
 # ---------------------------------------------------------------------------
 # Strong model — used for the final recommendation, QA answers, and
 # search ranking. Quality matters most here; use the best you can afford.
 # ---------------------------------------------------------------------------
-MODEL_STRONG = "openai/gpt-oss-120b:free"
+MODEL_STRONG = "google/gemma-4-26b-a4b-it"
 
 # ---------------------------------------------------------------------------
 # Fallback model — used automatically when fast or strong fail (e.g. rate
 # limit, timeout, or model outage). Should be a small, reliable model.
 # ---------------------------------------------------------------------------
-MODEL_FALLBACK = "nvidia/nemotron-3-super-120b-a12b:free"   # Mistral's own infrastructure — independent of Venice and Google
+MODEL_FALLBACK = "google/gemma-4-26b-a4b-it"
 
 # ---------------------------------------------------------------------------
 # Token limits — raise if replies get cut off, lower to save cost/credits.
+# Fast is set high because reasoning models spend tokens thinking before
+# outputting the required JSON — 500 was too low and caused cut-off responses.
 # ---------------------------------------------------------------------------
-MAX_TOKENS_FAST     = 500
-MAX_TOKENS_STRONG   = 1000
-MAX_TOKENS_FALLBACK = 1000   # generous — must cover both fast and strong use cases
+MAX_TOKENS_FAST     = 1500
+MAX_TOKENS_STRONG   = 1500
+MAX_TOKENS_FALLBACK = 1500
 
 # ---------------------------------------------------------------------------
 # Temperature — 0.0 = deterministic, 1.0 = very creative.

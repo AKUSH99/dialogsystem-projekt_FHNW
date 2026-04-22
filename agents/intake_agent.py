@@ -135,24 +135,46 @@ class IntakeAgent:
 
     def _parse_response(self, text: str) -> IntakeResponse:
         """
-        Extracts the JSON block from the LLM's raw text response and
-        parses it into an IntakeResponse object.
+        Extracts the JSON object from the LLM's raw text and parses it
+        into an IntakeResponse object.
 
-        If parsing fails for any reason, falls back to treating the
-        entire text as the bot message with no slot updates.
-        This prevents the agent from crashing on a malformed response.
+        Uses raw_decode to walk the full text and collect every valid JSON
+        object. The last one with a "message" key is used — reasoning models
+        output their thinking first and the answer last, so the final object
+        is always the real response.
+
+        Falls back to the raw text as the message if nothing can be parsed.
         """
-        # Find the first {...} block in the response (ignore any surrounding text)
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
+        # Strip <think> tags in case llm_builder didn't catch them
+        text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+
+        # Walk the text with raw_decode to find all valid JSON objects
+        decoder = json.JSONDecoder()
+        candidates = []
+        pos = 0
+        while pos < len(text):
             try:
-                data = json.loads(match.group())
-                return IntakeResponse(**data)
-            except (json.JSONDecodeError, ValidationError):
-                # JSON found but couldn't be parsed — fall through to fallback
+                obj, end = decoder.raw_decode(text, pos)
+                if isinstance(obj, dict) and "message" in obj:
+                    candidates.append(obj)
+                pos = end
+            except json.JSONDecodeError:
+                pos += 1
+
+        # Take the last candidate — it is the actual answer, not intermediate reasoning
+        if candidates:
+            try:
+                return IntakeResponse(**candidates[-1])
+            except ValidationError:
                 pass
 
-        # Fallback: return the raw text as the message, no slots extracted
+        # Second fallback: JSON was found but cut off (token limit hit mid-response).
+        # Extract just the "message" value so the user sees a real reply, not raw reasoning.
+        message_match = re.search(r'"message"\s*:\s*"((?:[^"\\]|\\.)*)"', text)
+        if message_match:
+            return IntakeResponse(message=message_match.group(1))
+
+        # Last resort: return the raw text as the message, no slots extracted
         return IntakeResponse(message=text.strip())
 
     def _build_system_prompt(self, state: BuyBotState) -> str:

@@ -240,6 +240,27 @@ Dropped Rasa NLU entirely. Rasa requires a separate training/server process and 
 
 ---
 
+## 2026-04-22
+
+### Bug Fixes
+
+- **Reasoning leak fixed** (`agents/llm_builder.py`): `ModelWithFallback.invoke()` now strips `<think>...</think>` blocks from model output before returning to any agent — prevents reasoning models from leaking their internal thinking into the chat
+- **JSON extraction improved** (`agents/intake_agent.py`, `agents/expert_agents.py`): replaced the greedy `re.search(r"\{.*\}", ...)` regex with `json.JSONDecoder.raw_decode()`, which walks the full response text and picks the last valid JSON object with a `"message"` key — correctly handles reasoning models that output thinking before the JSON answer
+- **Cut-off JSON recovery** (same files): added a second fallback layer using `re.search(r'"message"\s*:\s*"..."')` — if the token limit cuts the JSON off mid-string, the message value is still extracted and shown to the user instead of raw reasoning text
+- **Expert agent skipping questions** (`agents/prompts.py`): all four expert agents (Gaming, Professional, Office, Uni) now have an explicit two-step satisfaction rule — Step 1 is a hard minimum gate; Step 2 requires working through all remaining key areas before `satisfied=true` is allowed. Previously, the broken JSON parser was accidentally masking this bug (parse always failed → `satisfied` always defaulted to `False`); the correct parser exposed the underlying prompt weakness
+
+### Improvements
+
+- **Token limits raised** (`model_config.py`): `MAX_TOKENS_FAST` and `MAX_TOKENS_STRONG` raised from 500 / 1000 → 1500 each; reasoning models spend 400–800 tokens on internal thinking before the JSON, so 500 was too low and caused cut-off responses
+- **Models updated** (`model_config.py`): switched all three model slots (fast, strong, fallback) to `google/gemma-4-26b-a4b-it` — a non-reasoning instruction-following model that outputs JSON directly without preamble, reducing latency and eliminating the reasoning-leak problem at the source
+
+### Root Cause Notes
+
+- High latency was caused by: (1) 120B reasoning models generating hundreds of thinking tokens per turn, (2) `MAX_TOKENS_FAST = 500` being too low so responses were cut off and the fallback fired (two API calls), (3) free-tier 120B models being slow by nature. Switching to a smaller non-reasoning model addresses all three.
+- The `satisfied=true` too early bug existed in the prompts from the start but was hidden by the broken JSON parser; fixing the parser revealed it.
+
+---
+
 ## Current Status
 
 🟢 **Infrastructure ready — API connections and LangSmith tracing verified**

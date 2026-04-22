@@ -109,22 +109,46 @@ class BaseExpertAgent:
 
     def _parse_response(self, text: str) -> ExpertResponse:
         """
-        Extracts the JSON block from the LLM's raw text and parses it
+        Extracts the JSON object from the LLM's raw text and parses it
         into an ExpertResponse object.
 
-        Falls back to returning the raw text as the message (no profile
-        update, not satisfied) if the JSON cannot be parsed. This prevents
-        the agent from crashing on a malformed response.
+        Uses raw_decode to walk the full text and collect every valid JSON
+        object. The last one with a "message" key is used — reasoning models
+        output their thinking first and the answer last, so the final object
+        is always the real response.
+
+        Falls back to the raw text as the message if nothing can be parsed.
         """
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
+        # Strip <think> tags in case llm_builder didn't catch them
+        text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+
+        # Walk the text with raw_decode to find all valid JSON objects
+        decoder = json.JSONDecoder()
+        candidates = []
+        pos = 0
+        while pos < len(text):
             try:
-                data = json.loads(match.group())
-                return ExpertResponse(**data)
-            except (json.JSONDecodeError, ValidationError):
+                obj, end = decoder.raw_decode(text, pos)
+                if isinstance(obj, dict) and "message" in obj:
+                    candidates.append(obj)
+                pos = end
+            except json.JSONDecodeError:
+                pos += 1
+
+        # Take the last candidate — it is the actual answer, not intermediate reasoning
+        if candidates:
+            try:
+                return ExpertResponse(**candidates[-1])
+            except ValidationError:
                 pass
 
-        # Fallback: treat entire response as the message
+        # Second fallback: JSON was found but cut off (token limit hit mid-response).
+        # Extract just the "message" value so the user sees a real reply, not raw reasoning.
+        message_match = re.search(r'"message"\s*:\s*"((?:[^"\\]|\\.)*)"', text)
+        if message_match:
+            return ExpertResponse(message=message_match.group(1))
+
+        # Last resort: treat entire response as the message
         return ExpertResponse(message=text.strip())
 
     def _build_system_prompt(self, state: BuyBotState) -> str:

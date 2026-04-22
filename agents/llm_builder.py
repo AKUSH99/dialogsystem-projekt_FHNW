@@ -7,8 +7,10 @@ setup is defined in exactly one place. To change a model, edit model_config.py.
 """
 
 import os
+import re
 
 from dotenv import load_dotenv
+from langchain_core.messages import AIMessage
 from langchain_openai import ChatOpenAI
 
 from model_config import (
@@ -37,14 +39,22 @@ class ModelWithFallback:
     def invoke(self, input, config=None, **kwargs):
         """Try the primary model; on any error, retry with the fallback."""
         try:
-            return self.primary.invoke(input, config, **kwargs)
+            response = self.primary.invoke(input, config, **kwargs)
         except Exception as e:
             # Print so the error is visible in the terminal / Streamlit logs
             print(
                 f"[fallback] {self.primary.model_name} failed "
                 f"({type(e).__name__}: {e}), retrying with {self.fallback.model_name}"
             )
-            return self.fallback.invoke(input, config, **kwargs)
+            response = self.fallback.invoke(input, config, **kwargs)
+
+        # Strip <think>...</think> reasoning blocks that some models (e.g. DeepSeek R1,
+        # Nemotron) include in their output — agents should never see the raw thinking.
+        cleaned = re.sub(r"<think>.*?</think>", "", response.content, flags=re.DOTALL).strip()
+        if cleaned != response.content:
+            response = AIMessage(content=cleaned)
+
+        return response
 
 
 def build_llms() -> tuple[ModelWithFallback, ModelWithFallback]:
