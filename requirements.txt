@@ -1,7 +1,3 @@
-# Rasa
-rasa==3.6.21
-rasa-sdk==3.6.2
-
 # LangGraph / LangChain
 langgraph==0.2.54
 langchain-core==0.3.0
