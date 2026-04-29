@@ -15,14 +15,15 @@
   </defs>
 
   <!-- Background -->
-  <rect width="900" height="920" fill="#f8fafc"/>
+  <rect width="900" height="920" fill="none"/>
 
   <!-- Title -->
   <text x="450" y="36" text-anchor="middle" font-size="17" font-weight="700"
         fill="#0f172a" letter-spacing="-0.2">Buy-Bot — Pipeline &amp; Database Flow</text>
+  <text x="450" y="52" text-anchor="middle" font-size="10" fill="#64748b">LLM via OpenRouter · 1 model across all agents · LangGraph state machine</text>
 
   <!-- ══════════════════════════════════════
-       STAGE 1 — RASA NLU   y 56-148
+       STAGE 1 — INTAKE AGENT   y 56-148
   ══════════════════════════════════════ -->
   <!-- badge -->
   <rect x="44" y="62" width="22" height="22" rx="11" fill="#2563eb"/>
@@ -30,26 +31,27 @@
 
   <rect x="76" y="56" width="520" height="92" rx="8"
         fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="336" y="79"  text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">Rasa NLU — Intake</text>
-  <text x="336" y="97"  text-anchor="middle" font-size="11" fill="#1d4ed8">Slot-filling forms collect 4 values from the user</text>
+  <text x="336" y="79"  text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">Intake Agent (LLM)</text>
+  <text x="336" y="97"  text-anchor="middle" font-size="11" fill="#1d4ed8">Slot-filling collects 5 values from the user</text>
   <!-- slot chips -->
   <rect x="90"  y="107" width="72" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
-  <text x="126" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">budget</text>
-  <rect x="172" y="107" width="98" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
-  <text x="221" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">preferred_os</text>
-  <rect x="280" y="107" width="82" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
-  <text x="321" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">use_case</text>
-  <rect x="372" y="107" width="76" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
-  <text x="410" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">mobility</text>
-  <text x="468" y="122" font-size="10" fill="#3b82f6">(float · string · string · string)</text>
+  <text x="126" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">language</text>
+  <rect x="172" y="107" width="64" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="204" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">budget</text>
+  <rect x="246" y="107" width="98" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="295" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">preferred_os</text>
+  <rect x="354" y="107" width="82" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="395" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">use_case</text>
+  <rect x="446" y="107" width="76" height="24" rx="12" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="484" y="123" text-anchor="middle" font-size="10" fill="#1e3a8a">mobility</text>
 
   <!-- data label bubble right -->
   <rect x="618" y="68" width="254" height="68" rx="6"
         fill="white" stroke="#cbd5e1" stroke-width="1"/>
   <text x="632" y="86"  font-size="10" font-weight="600" fill="#475569">Handoff payload</text>
   <text x="632" y="102" font-size="9"  fill="#64748b" font-family="monospace">{</text>
-  <text x="644" y="116" font-size="9"  fill="#64748b" font-family="monospace">budget: 900.0,</text>
-  <text x="644" y="128" font-size="9"  fill="#64748b" font-family="monospace">preferred_os: "windows",</text>
+  <text x="644" y="116" font-size="9"  fill="#64748b" font-family="monospace">language: "german",  budget: 900.0,</text>
+  <text x="644" y="128" font-size="9"  fill="#64748b" font-family="monospace">preferred_os: "windows",  use_case: "gaming"</text>
   <!-- second line -->
   <!-- arrow from stage to bubble -->
   <line x1="596" y1="102" x2="618" y2="102" stroke="#94a3b8" stroke-width="1" marker-end="url(#arr)"/>
@@ -66,14 +68,14 @@
 
   <rect x="76" y="176" width="520" height="64" rx="8"
         fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="336" y="200" text-anchor="middle" font-size="13" font-weight="600" fill="#3730a3">Router LLM</text>
-  <text x="336" y="219" text-anchor="middle" font-size="11" fill="#4338ca">Maps use_case → expert agent · handles ambiguous input</text>
+  <text x="336" y="200" text-anchor="middle" font-size="13" font-weight="600" fill="#3730a3">Router (no LLM)</text>
+  <text x="336" y="219" text-anchor="middle" font-size="11" fill="#4338ca">Dict lookup: use_case → expert agent node name</text>
 
   <!-- data label -->
   <rect x="618" y="183" width="254" height="44" rx="6"
         fill="white" stroke="#cbd5e1" stroke-width="1"/>
   <text x="632" y="200" font-size="10" font-weight="600" fill="#475569">Routes to</text>
-  <text x="632" y="217" font-size="9"  fill="#64748b" font-family="monospace">agent_type: "gaming"</text>
+  <text x="632" y="217" font-size="9"  fill="#64748b" font-family="monospace">node: "gaming_agent"</text>
   <line x1="596" y1="207" x2="618" y2="207" stroke="#94a3b8" stroke-width="1" marker-end="url(#arr)"/>
 
   <!-- connector down -->

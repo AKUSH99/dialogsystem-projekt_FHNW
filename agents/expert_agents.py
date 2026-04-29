@@ -63,6 +63,10 @@ class BaseExpertAgent:
     # Each subclass sets this to its own role prompt from prompts.py
     ROLE_PROMPT = ""
 
+    # Minimum number of expert turns before satisfied=True is allowed.
+    # Prevents the LLM from skipping the expert stage on the first question.
+    MIN_TURNS = 2
+
     def __init__(self, llm):
         """
         llm — a ChatOpenAI (or compatible) client pointed at OpenRouter.
@@ -77,6 +81,10 @@ class BaseExpertAgent:
         profile data into state.user_profile. When satisfied, signals the
         graph to move on to the search agent.
         """
+        # Count how many times this expert has run — enforces the minimum gate.
+        # Stored in user_profile under a private key so the search agent ignores it.
+        expert_turns = state.user_profile.get("_expert_turns", 0) + 1
+
         # Build the layered system prompt
         system_message = SystemMessage(content=self._build_system_prompt(state))
         messages = [system_message] + state.messages
@@ -85,9 +93,20 @@ class BaseExpertAgent:
         raw = self.llm.invoke(messages)
         response = self._parse_response(raw.content)
 
+        # Enforce minimum turns: override satisfied=True until the gate is reached.
+        # This guarantees the expert always asks at least MIN_TURNS questions,
+        # even if the LLM decides it has enough info after just one answer.
+        if response.satisfied and expert_turns < self.MIN_TURNS:
+            response.satisfied = False
+
         # Merge the new profile data into the existing user_profile dict.
         # We read the full current profile and add the new keys on top.
-        updated_profile = {**state.user_profile, **response.user_profile_update}
+        # _expert_turns is stored here so it persists across turns.
+        updated_profile = {
+            **state.user_profile,
+            **response.user_profile_update,
+            "_expert_turns": expert_turns,
+        }
 
         # Build the state update
         update = {

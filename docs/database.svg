@@ -26,7 +26,7 @@
     </filter>
   </defs>
 
-  <rect width="1400" height="1040" fill="#f8fafc"/>
+  <rect width="1400" height="1040" fill="none"/>
 
   <!-- Title -->
   <text x="700" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Buy-Bot -- Normalized Database Schema (SQLite)</text>
